@@ -10,16 +10,16 @@ const Auth = {
   // Initialize auth state
   async init() {
     try {
-      if (!supabase) return;
+      if (!supabaseClient) return;
 
       // Check existing session
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await supabaseClient.auth.getSession();
       if (session) {
         this.currentUser = session.user;
       }
 
       // Listen for auth changes
-      supabase.auth.onAuthStateChange((event, session) => {
+      supabaseClient.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_IN' && session) {
           this.currentUser = session.user;
         } else if (event === 'SIGNED_OUT') {
@@ -34,14 +34,14 @@ const Auth = {
   // Admin login
   async login(email, password) {
     try {
-      if (!supabase) {
+      if (!supabaseClient) {
         showToast('Supabase belum dimuat!', 'error');
         return { error: { message: 'Supabase not loaded' } };
       }
 
       console.log('Attempting login for:', email);
 
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
         email,
         password
       });
@@ -66,12 +66,12 @@ const Auth = {
   // Admin register
   async register(email, password, name) {
     try {
-      if (!supabase) {
+      if (!supabaseClient) {
         showToast('Supabase belum dimuat!', 'error');
         return { error: { message: 'Supabase not loaded' } };
       }
 
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
         options: {
@@ -87,7 +87,7 @@ const Auth = {
       // Try to insert into admins table (may fail due to RLS, that's OK)
       if (data.user) {
         try {
-          await supabase.from('admins').insert({
+          await supabaseClient.from('admins').insert({
             id: data.user.id,
             email: email,
             name: name
@@ -109,8 +109,8 @@ const Auth = {
   // Logout
   async logout() {
     try {
-      if (!supabase) return;
-      await supabase.auth.signOut();
+      if (!supabaseClient) return;
+      await supabaseClient.auth.signOut();
       this.currentUser = null;
       showToast('Berhasil logout', 'info');
     } catch (err) {

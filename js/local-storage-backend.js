@@ -11,7 +11,7 @@ const SupabaseDB = {
   // QUESTIONS
   // ========================
   async getQuestions(search, category) {
-    let query = supabase.from('questions').select('*').order('created_at', { ascending: false });
+    let query = supabaseClient.from('questions').select('*').order('created_at', { ascending: false });
 
     if (category) {
       query = query.eq('category', category);
@@ -26,7 +26,7 @@ const SupabaseDB = {
   },
 
   async getQuestionsByIds(ids) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('questions')
       .select('*')
       .in('id', ids);
@@ -35,7 +35,7 @@ const SupabaseDB = {
   },
 
   async addQuestion(questionData) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('questions')
       .insert(questionData)
       .select()
@@ -50,7 +50,7 @@ const SupabaseDB = {
     delete updateData.id;
     updateData.updated_at = new Date().toISOString();
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('questions')
       .update(updateData)
       .eq('id', id)
@@ -61,7 +61,7 @@ const SupabaseDB = {
   },
 
   async deleteQuestion(id) {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('questions')
       .delete()
       .eq('id', id);
@@ -75,7 +75,7 @@ const SupabaseDB = {
   async createSession(title, questionIds, createdBy) {
     const gameCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('game_sessions')
       .insert({
         title,
@@ -92,7 +92,7 @@ const SupabaseDB = {
   },
 
   async getSession(code) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('game_sessions')
       .select('*')
       .eq('game_code', code)
@@ -102,7 +102,7 @@ const SupabaseDB = {
   },
 
   async getSessionById(id) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('game_sessions')
       .select('*')
       .eq('id', id)
@@ -112,7 +112,7 @@ const SupabaseDB = {
   },
 
   async getSessions(status) {
-    let query = supabase
+    let query = supabaseClient
       .from('game_sessions')
       .select('*')
       .order('created_at', { ascending: false });
@@ -127,7 +127,7 @@ const SupabaseDB = {
   },
 
   async updateSession(id, updateData) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('game_sessions')
       .update(updateData)
       .eq('id', id)
@@ -141,7 +141,7 @@ const SupabaseDB = {
   // PLAYERS
   // ========================
   async getPlayers(sessionId) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('players')
       .select('*')
       .eq('session_id', sessionId)
@@ -151,7 +151,7 @@ const SupabaseDB = {
   },
 
   async joinGame(sessionId, name, avatarColor) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('players')
       .insert({
         session_id: sessionId,
@@ -170,7 +170,7 @@ const SupabaseDB = {
   },
 
   async updatePlayer(id, updateData) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('players')
       .update(updateData)
       .eq('id', id)
@@ -184,7 +184,7 @@ const SupabaseDB = {
   // ANSWERS
   // ========================
   async submitAnswer(sessionId, playerId, questionId, answer, isCorrect, timeTaken, pointsEarned) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('answers')
       .insert({
         session_id: sessionId,
@@ -202,7 +202,7 @@ const SupabaseDB = {
   },
 
   async getAnswers(sessionId) {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('answers')
       .select('*')
       .eq('session_id', sessionId);
@@ -215,9 +215,9 @@ const SupabaseDB = {
   // ========================
   async getStats() {
     const [qRes, sRes, pRes] = await Promise.all([
-      supabase.from('questions').select('id', { count: 'exact', head: true }),
-      supabase.from('game_sessions').select('id', { count: 'exact', head: true }),
-      supabase.from('players').select('id', { count: 'exact', head: true })
+      supabaseClient.from('questions').select('id', { count: 'exact', head: true }),
+      supabaseClient.from('game_sessions').select('id', { count: 'exact', head: true }),
+      supabaseClient.from('players').select('id', { count: 'exact', head: true })
     ]);
 
     return {
@@ -231,7 +231,7 @@ const SupabaseDB = {
   // REALTIME SUBSCRIPTIONS
   // ========================
   subscribeToSession(sessionId, callback) {
-    return supabase
+    return supabaseClient
       .channel(`session-${sessionId}`)
       .on('postgres_changes', {
         event: '*',
@@ -245,7 +245,7 @@ const SupabaseDB = {
   },
 
   subscribeToPlayers(sessionId, callback) {
-    return supabase
+    return supabaseClient
       .channel(`players-${sessionId}`)
       .on('postgres_changes', {
         event: '*',
@@ -259,7 +259,7 @@ const SupabaseDB = {
   },
 
   subscribeToAnswers(sessionId, callback) {
-    return supabase
+    return supabaseClient
       .channel(`answers-${sessionId}`)
       .on('postgres_changes', {
         event: 'INSERT',
@@ -274,7 +274,7 @@ const SupabaseDB = {
 
   // Unsubscribe all channels
   unsubscribeAll() {
-    supabase.removeAllChannels();
+    supabaseClient.removeAllChannels();
   }
 };
 

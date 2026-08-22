@@ -134,6 +134,13 @@
                 <div class="options-grid" id="options-grid">
                   <!-- Options will be rendered here -->
                 </div>
+                <!-- Essay Answer Area -->
+                <div id="essay-answer-area" style="display:none;">
+                  <textarea id="essay-input" class="textarea" placeholder="Tulis jawabanmu di sini..." rows="5" style="width:100%;font-size:1rem;margin-top:12px;background:rgba(255,255,255,0.05);border:2px solid rgba(108,99,255,0.3);border-radius:12px;color:var(--text-primary);padding:16px;resize:vertical;"></textarea>
+                  <button class="btn btn-primary btn-xl btn-block" id="btn-submit-essay" onclick="PlayController.submitEssay()" style="margin-top:12px;">
+                    📤 Kirim Jawaban
+                  </button>
+                </div>
               </div>
             </div>
           </div>

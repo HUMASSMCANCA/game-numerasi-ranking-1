@@ -258,20 +258,36 @@ const GameEngine = {
   },
 
   // --- Submit Answer (Player) ---
-  async submitAnswer(questionId, answer, timeTaken) {
+  async submitAnswer(questionId, answer, timeTaken, isEssay) {
     if (!this.playerId) return null;
 
-    const question = this.questions.find(q => q.id === questionId);
+    var question = this.questions.find(function(q) { return q.id === questionId; });
     if (!question) return null;
 
-    const isCorrect = answer.toString().trim().toLowerCase() === question.correct_answer.toString().trim().toLowerCase();
+    // Get current player data
+    var currentPlayer = this.players.find(function(p) { return p.id === GameEngine.playerId; });
 
-    // Get current player data for streak
-    const currentPlayer = this.players.find(p => p.id === this.playerId);
-    const currentStreak = currentPlayer ? (isCorrect ? currentPlayer.streak + 1 : 0) : (isCorrect ? 1 : 0);
-    const maxStreak = currentPlayer ? Math.max(currentPlayer.max_streak, currentStreak) : currentStreak;
+    if (isEssay) {
+      // Essay: don't auto-grade, just store the answer
+      try {
+        await SupabaseDB.submitAnswer(
+          this.sessionId, this.playerId, questionId,
+          answer.toString(), false, timeTaken, 0
+        );
+        return { isCorrect: false, points: 0, isEssay: true };
+      } catch (err) {
+        console.error('Failed to submit essay:', err);
+        return null;
+      }
+    }
 
-    const points = calculatePoints(question.points || 10, question.time_limit || 30, timeTaken, isCorrect, currentStreak);
+    // Multiple choice: auto-grade
+    var isCorrect = answer.toString().trim().toLowerCase() === question.correct_answer.toString().trim().toLowerCase();
+
+    var currentStreak = currentPlayer ? (isCorrect ? currentPlayer.streak + 1 : 0) : (isCorrect ? 1 : 0);
+    var maxStreak = currentPlayer ? Math.max(currentPlayer.max_streak, currentStreak) : currentStreak;
+
+    var points = calculatePoints(question.points || 10, question.time_limit || 30, timeTaken, isCorrect, currentStreak);
 
     try {
       // Submit answer
@@ -281,7 +297,7 @@ const GameEngine = {
       );
 
       // Update player stats
-      const updates = {
+      var updates = {
         score: (currentPlayer?.score || 0) + points,
         streak: currentStreak,
         max_streak: maxStreak
@@ -295,7 +311,7 @@ const GameEngine = {
 
       await SupabaseDB.updatePlayer(this.playerId, updates);
 
-      return { isCorrect, points, streak: currentStreak };
+      return { isCorrect: isCorrect, points: points, streak: currentStreak };
     } catch (err) {
       console.error('Failed to submit answer:', err);
       return null;

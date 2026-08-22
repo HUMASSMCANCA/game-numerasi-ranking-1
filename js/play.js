@@ -248,18 +248,34 @@ const PlayController = {
       questionText.innerHTML = escapeHtml(question.question_text);
     }
 
-    // Update options
-    const optionsGrid = document.getElementById('options-grid');
-    if (optionsGrid && question.options) {
-      const labels = ['A', 'B', 'C', 'D'];
-      const options = typeof question.options === 'string' ? JSON.parse(question.options) : question.options;
+    // Toggle essay vs multiple choice
+    var essayArea = document.getElementById('essay-answer-area');
+    var optionsGrid = document.getElementById('options-grid');
 
-      optionsGrid.innerHTML = options.map((opt, i) => `
-        <button class="option-btn" data-answer="${escapeHtml(opt)}" onclick="PlayController.selectAnswer('${escapeHtml(opt)}', this)">
-          <span class="option-label">${labels[i]}</span>
-          <span>${escapeHtml(opt)}</span>
-        </button>
-      `).join('');
+    if (question.question_type === 'essay') {
+      // Essay mode
+      if (optionsGrid) optionsGrid.style.display = 'none';
+      if (essayArea) {
+        essayArea.style.display = 'block';
+        document.getElementById('essay-input').value = '';
+        document.getElementById('btn-submit-essay').disabled = false;
+        document.getElementById('btn-submit-essay').innerHTML = '📤 Kirim Jawaban';
+      }
+    } else {
+      // Multiple choice mode
+      if (essayArea) essayArea.style.display = 'none';
+      if (optionsGrid) {
+        optionsGrid.style.display = 'grid';
+        var labels = ['A', 'B', 'C', 'D'];
+        var options = typeof question.options === 'string' ? JSON.parse(question.options) : question.options;
+
+        optionsGrid.innerHTML = options.map(function(opt, i) {
+          return '<button class="option-btn" data-answer="' + escapeHtml(opt) + '" onclick="PlayController.selectAnswer(\'' + escapeHtml(opt).replace(/'/g, "\\'") + '\', this)">' +
+            '<span class="option-label">' + labels[i] + '</span>' +
+            '<span>' + escapeHtml(opt) + '</span>' +
+          '</button>';
+        }).join('');
+      }
     }
 
     // Start timer
@@ -277,7 +293,41 @@ const PlayController = {
     }
   },
 
-  // --- Select Answer ---
+  // --- Submit Essay Answer ---
+  async submitEssay() {
+    if (this.hasAnswered) return;
+
+    var essayInput = document.getElementById('essay-input');
+    var answer = essayInput.value.trim();
+
+    if (!answer) {
+      showToast('Tulis jawabanmu dulu!', 'error');
+      return;
+    }
+
+    this.hasAnswered = true;
+    var timeTaken = (Date.now() - GameEngine.questionStartTime) / 1000;
+    this.stopTimer();
+
+    // Disable submit button
+    var btn = document.getElementById('btn-submit-essay');
+    btn.disabled = true;
+    btn.innerHTML = '✅ Terkirim';
+    essayInput.disabled = true;
+
+    // Submit — essay is always "pending" (not auto-graded)
+    await GameEngine.submitAnswer(
+      GameEngine.getCurrentQuestion().id,
+      answer,
+      timeTaken,
+      true // isEssay flag
+    );
+
+    this.showFeedback('📝', 'Jawaban terkirim! Menunggu koreksi guru.');
+    await GameEngine.refreshPlayers();
+  },
+
+  // --- Select Answer (Multiple Choice) ---
   async selectAnswer(answer, btnElement) {
     if (this.hasAnswered) return;
     this.hasAnswered = true;

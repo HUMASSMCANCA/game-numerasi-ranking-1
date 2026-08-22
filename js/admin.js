@@ -124,7 +124,8 @@ const AdminController = {
       'dashboard': '📊 Dashboard',
       'questions': '📝 Kelola Soal',
       'game': '🎮 Kelola Game',
-      'results': '📈 Hasil & Export'
+      'results': '📈 Hasil & Export',
+      'grading': '✍️ Koreksi Essay'
     };
     document.getElementById('topbar-title').textContent = titles[section] || section;
 
@@ -136,6 +137,7 @@ const AdminController = {
     if (section === 'dashboard') this.loadDashboardStats();
     if (section === 'questions') this.loadQuestions();
     if (section === 'results') this.loadResults();
+    if (section === 'grading') this.loadGradingSessions();
   },
 
   // ========================
@@ -207,16 +209,22 @@ const AdminController = {
         'cerita': '📖 Cerita'
       };
       const difficultyStars = '⭐'.repeat(q.difficulty || 1);
+      const typeBadge = q.question_type === 'essay'
+        ? '<span class="badge" style="background:rgba(255,165,0,0.15);color:#FFA500;">✍️ Essay</span>'
+        : '<span class="badge" style="background:rgba(108,99,255,0.15);color:#6C63FF;">📝 PG</span>';
+      const answerInfo = q.question_type === 'essay'
+        ? (q.correct_answer ? `Petunjuk: <span style="color:var(--text-muted);">${escapeHtml(q.correct_answer)}</span>` : '<span style="color:var(--text-muted);">Koreksi manual</span>')
+        : `Jawaban: <span style="color:var(--accent-green);font-weight:600;">${escapeHtml(q.correct_answer)}</span>`;
 
       return `
         <tr>
           <td style="max-width:300px;">
             <div style="font-weight:600;">${escapeHtml(q.question_text)}</div>
             <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">
-              Jawaban: <span style="color:var(--accent-green);font-weight:600;">${escapeHtml(q.correct_answer)}</span>
+              ${answerInfo}
             </div>
           </td>
-          <td><span class="badge badge-primary">${categoryLabels[q.category] || q.category}</span></td>
+          <td>${typeBadge} <span class="badge badge-primary">${categoryLabels[q.category] || q.category}</span></td>
           <td>${difficultyStars}</td>
           <td><span class="badge badge-gold">${q.points || 10} pts</span></td>
           <td>${q.time_limit || 30}s</td>
@@ -231,34 +239,55 @@ const AdminController = {
     }).join('');
   },
 
+  // --- Toggle Question Type ---
+  toggleQuestionType(type) {
+    var mcSection = document.getElementById('mc-options-section');
+    var essaySection = document.getElementById('essay-section');
+    if (type === 'essay') {
+      mcSection.style.display = 'none';
+      essaySection.style.display = 'block';
+    } else {
+      mcSection.style.display = 'block';
+      essaySection.style.display = 'none';
+    }
+  },
+
   // --- Open Add/Edit Question Modal ---
   openQuestionModal(question = null) {
     this.editingQuestionId = question ? question.id : null;
 
-    const modal = document.getElementById('question-modal');
-    const title = document.getElementById('modal-title');
+    var modal = document.getElementById('question-modal');
+    var title = document.getElementById('modal-title');
 
     title.textContent = question ? 'Edit Soal' : 'Tambah Soal Baru';
 
     // Fill form
     document.getElementById('q-text').value = question?.question_text || '';
+    document.getElementById('q-type').value = question?.question_type || 'multiple_choice';
     document.getElementById('q-category').value = question?.category || 'penjumlahan';
     document.getElementById('q-difficulty').value = question?.difficulty || 1;
     document.getElementById('q-points').value = question?.points || 10;
     document.getElementById('q-time').value = question?.time_limit || 30;
 
-    // Fill options
-    const options = question?.options || ['', '', '', ''];
-    for (let i = 0; i < 4; i++) {
-      const input = document.getElementById(`q-option-${i}`);
+    // Toggle type sections
+    this.toggleQuestionType(question?.question_type || 'multiple_choice');
+
+    // Fill options (for multiple choice)
+    var options = question?.options || ['', '', '', ''];
+    for (var i = 0; i < 4; i++) {
+      var input = document.getElementById('q-option-' + i);
       if (input) input.value = options[i] || '';
     }
 
     // Set correct answer radio
-    const correctAnswer = question?.correct_answer || '';
-    document.querySelectorAll('input[name="correct-answer"]').forEach((radio, i) => {
+    var correctAnswer = question?.correct_answer || '';
+    document.querySelectorAll('input[name="correct-answer"]').forEach(function(radio, i) {
       radio.checked = options[i] === correctAnswer;
     });
+
+    // Fill essay hint
+    var essayHint = document.getElementById('q-essay-hint');
+    if (essayHint) essayHint.value = (question?.question_type === 'essay' ? question?.correct_answer : '') || '';
 
     modal.classList.add('active');
   },
@@ -270,43 +299,51 @@ const AdminController = {
 
   // --- Save Question (Supabase) ---
   async saveQuestion() {
-    const text = document.getElementById('q-text').value.trim();
-    const category = document.getElementById('q-category').value;
-    const difficulty = parseInt(document.getElementById('q-difficulty').value);
-    const points = parseInt(document.getElementById('q-points').value);
-    const timeLimit = parseInt(document.getElementById('q-time').value);
-
-    // Collect options
-    const options = [];
-    for (let i = 0; i < 4; i++) {
-      const val = document.getElementById(`q-option-${i}`).value.trim();
-      if (val) options.push(val);
-    }
-
-    // Get correct answer
-    const correctRadio = document.querySelector('input[name="correct-answer"]:checked');
-    let correctAnswer = '';
-    if (correctRadio) {
-      const idx = parseInt(correctRadio.value);
-      correctAnswer = options[idx] || '';
-    }
+    var text = document.getElementById('q-text').value.trim();
+    var questionType = document.getElementById('q-type').value;
+    var category = document.getElementById('q-category').value;
+    var difficulty = parseInt(document.getElementById('q-difficulty').value);
+    var points = parseInt(document.getElementById('q-points').value);
+    var timeLimit = parseInt(document.getElementById('q-time').value);
 
     // Validation
     if (!text) { showToast('Masukkan teks soal!', 'error'); return; }
-    if (options.length < 2) { showToast('Minimal 2 opsi jawaban!', 'error'); return; }
-    if (!correctAnswer) { showToast('Pilih jawaban yang benar!', 'error'); return; }
 
-    const questionData = {
+    var questionData = {
       question_text: text,
-      question_type: 'multiple_choice',
-      category,
-      difficulty,
-      options,
-      correct_answer: correctAnswer,
-      points,
+      question_type: questionType,
+      category: category,
+      difficulty: difficulty,
+      points: points,
       time_limit: timeLimit,
       created_by: Auth.getUserId()
     };
+
+    if (questionType === 'essay') {
+      // Essay: no options, correct_answer = hint for admin
+      questionData.options = null;
+      questionData.correct_answer = document.getElementById('q-essay-hint').value.trim() || '(essay - koreksi manual)';
+    } else {
+      // Multiple choice
+      var options = [];
+      for (var i = 0; i < 4; i++) {
+        var val = document.getElementById('q-option-' + i).value.trim();
+        if (val) options.push(val);
+      }
+
+      var correctRadio = document.querySelector('input[name="correct-answer"]:checked');
+      var correctAnswer = '';
+      if (correctRadio) {
+        var idx = parseInt(correctRadio.value);
+        correctAnswer = options[idx] || '';
+      }
+
+      if (options.length < 2) { showToast('Minimal 2 opsi jawaban!', 'error'); return; }
+      if (!correctAnswer) { showToast('Pilih jawaban yang benar!', 'error'); return; }
+
+      questionData.options = options;
+      questionData.correct_answer = correctAnswer;
+    }
 
     try {
       if (this.editingQuestionId) {
@@ -322,7 +359,7 @@ const AdminController = {
       this.loadQuestions();
       this.loadDashboardStats();
     } catch (err) {
-      showToast(`Error: ${err.message}`, 'error');
+      showToast('Error: ' + err.message, 'error');
     }
   },
 
@@ -554,6 +591,134 @@ const AdminController = {
       }
     } catch (err) {
       showToast(`Error: ${err.message}`, 'error');
+    }
+  },
+
+  // ========================
+  // ESSAY GRADING
+  // ========================
+
+  // --- Load Sessions for Grading ---
+  async loadGradingSessions() {
+    try {
+      var sessions = await SupabaseDB.getSessions();
+      var select = document.getElementById('grading-session-select');
+      if (!select || !sessions) return;
+
+      select.innerHTML = '<option value="">-- Pilih Sesi --</option>';
+      sessions.forEach(function(s) {
+        select.innerHTML += '<option value="' + s.id + '">' + escapeHtml(s.title) + ' (' + s.game_code + ') - ' + s.status + '</option>';
+      });
+    } catch (err) {
+      console.error('Load grading sessions error:', err);
+    }
+  },
+
+  // --- Load Essay Answers for a Session ---
+  async loadEssayAnswers(sessionId) {
+    var container = document.getElementById('essay-answers-list');
+    if (!sessionId) {
+      container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px;">Pilih sesi game untuk melihat jawaban essay.</p>';
+      return;
+    }
+
+    container.innerHTML = '<p style="text-align:center;padding:20px;"><span class="spinner"></span> Memuat jawaban...</p>';
+
+    try {
+      // Get all answers for this session
+      var answers = await SupabaseDB.getAnswers(sessionId);
+      var players = await SupabaseDB.getPlayers(sessionId);
+      var questions = await SupabaseDB.getQuestions();
+
+      // Filter only essay answers
+      var essayQuestionIds = questions.filter(function(q) { return q.question_type === 'essay'; }).map(function(q) { return q.id; });
+      var essayAnswers = (answers || []).filter(function(a) { return essayQuestionIds.indexOf(a.question_id) !== -1; });
+
+      if (essayAnswers.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px;">Tidak ada jawaban essay di sesi ini.</p>';
+        return;
+      }
+
+      // Group by question
+      var grouped = {};
+      essayAnswers.forEach(function(a) {
+        if (!grouped[a.question_id]) grouped[a.question_id] = [];
+        grouped[a.question_id].push(a);
+      });
+
+      var html = '';
+      Object.keys(grouped).forEach(function(qId) {
+        var q = questions.find(function(x) { return x.id === qId; });
+        var answersList = grouped[qId];
+
+        html += '<div class="card" style="margin-bottom:20px;">';
+        html += '<h4 style="margin-bottom:4px;">' + escapeHtml(q ? q.question_text : 'Soal') + '</h4>';
+        html += '<p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px;">Petunjuk: ' + escapeHtml(q ? q.correct_answer : '-') + ' | Maks poin: ' + (q ? q.points : 10) + '</p>';
+
+        answersList.forEach(function(a) {
+          var player = players.find(function(p) { return p.id === a.player_id; });
+          var playerName = player ? player.name : 'Unknown';
+          var gradedBadge = a.points_earned > 0
+            ? '<span class="badge badge-success">✅ ' + a.points_earned + ' pts</span>'
+            : '<span class="badge" style="background:rgba(255,165,0,0.15);color:#FFA500;">⏳ Belum dinilai</span>';
+
+          html += '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px;margin-bottom:12px;">';
+          html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">';
+          html += '<strong>' + escapeHtml(playerName) + '</strong> ' + gradedBadge;
+          html += '</div>';
+          html += '<div style="background:rgba(255,255,255,0.05);padding:12px;border-radius:8px;margin-bottom:12px;white-space:pre-wrap;line-height:1.6;">' + escapeHtml(a.answer) + '</div>';
+          html += '<div style="display:flex;gap:8px;align-items:center;">';
+          html += '<input type="number" id="grade-' + a.id + '" class="input" value="' + (a.points_earned || 0) + '" min="0" max="' + (q ? q.points : 100) + '" style="width:100px;">';
+          html += '<span style="color:var(--text-muted);font-size:0.85rem;">/ ' + (q ? q.points : 10) + ' pts</span>';
+          html += '<button class="btn btn-primary" onclick="AdminController.gradeEssay(\'' + a.id + '\', \'' + a.player_id + '\', ' + (q ? q.points : 10) + ')" style="min-width:auto;padding:8px 16px;">💾 Simpan Nilai</button>';
+          html += '</div>';
+          html += '</div>';
+        });
+
+        html += '</div>';
+      });
+
+      container.innerHTML = html;
+    } catch (err) {
+      console.error('Load essay answers error:', err);
+      container.innerHTML = '<p style="color:var(--accent-red);text-align:center;padding:20px;">Error: ' + err.message + '</p>';
+    }
+  },
+
+  // --- Grade a Single Essay Answer ---
+  async gradeEssay(answerId, playerId, maxPoints) {
+    var input = document.getElementById('grade-' + answerId);
+    var points = parseInt(input.value) || 0;
+
+    if (points < 0) points = 0;
+    if (points > maxPoints) points = maxPoints;
+
+    try {
+      // Update the answer record
+      await supabaseClient.from('answers').update({
+        points_earned: points,
+        is_correct: points > 0
+      }).eq('id', answerId);
+
+      // Update the player's total score
+      var playerData = await supabaseClient.from('players').select('*').eq('id', playerId).single();
+      if (playerData.data) {
+        // Recalculate total score from all answers
+        var allAnswers = await supabaseClient.from('answers').select('points_earned').eq('player_id', playerId);
+        var totalScore = 0;
+        if (allAnswers.data) {
+          allAnswers.data.forEach(function(a) { totalScore += (a.points_earned || 0); });
+        }
+        await supabaseClient.from('players').update({ score: totalScore }).eq('id', playerId);
+      }
+
+      showToast('Nilai berhasil disimpan! ✅', 'success');
+
+      // Reload the answers
+      var select = document.getElementById('grading-session-select');
+      if (select.value) this.loadEssayAnswers(select.value);
+    } catch (err) {
+      showToast('Error: ' + err.message, 'error');
     }
   }
 };

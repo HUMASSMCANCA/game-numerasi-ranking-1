@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Game Numerasi Ranking 1</title>
+  <meta name="description" content="Panel admin untuk mengelola soal, mengontrol game, dan mengunduh hasil permainan numerasi.">
+  <meta name="author" content="Ahmad Sahrul Aziz">
+  <meta name="theme-color" content="#0A0E27">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛠️</text></svg>">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    .page-loader{position:fixed;inset:0;z-index:99999;background:#0A0E27;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s,visibility .4s}
+    .page-loader.hidden{opacity:0;visibility:hidden}
+    .page-loader .loader-spinner{width:48px;height:48px;border:4px solid rgba(108,99,255,.2);border-top-color:#6C63FF;border-radius:50%;animation:spin .8s linear infinite}
+    .page-loader p{color:rgba(255,255,255,.6);font-family:'Outfit',sans-serif;font-size:.95rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+  <!-- Page Loader -->
+  <div class="page-loader" id="page-loader">
+    <div style="font-size:3rem">🛠️</div>
+    <div class="loader-spinner"></div>
+    <p>Memuat Admin Panel...</p>
+  </div>
+
+  <!-- ===== LOGIN SCREEN ===== -->
+  <div class="admin-login" id="admin-login" style="display:flex;">
+    <div class="login-card glass-card">
+      <div style="font-size:3rem;margin-bottom:16px;">🔐</div>
+      <h2>Admin <span class="text-gradient">Login</span></h2>
+      <p class="subtitle" style="color:var(--text-secondary);">Masuk ke panel admin</p>
+
+      <div class="input-group">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" class="input" placeholder="admin@email.com" autocomplete="email">
+      </div>
+
+      <div class="input-group">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" class="input" placeholder="••••••••" autocomplete="current-password"
+               onkeydown="if(event.key==='Enter')AdminController.handleLogin()">
+      </div>
+
+      <button class="btn btn-primary btn-xl btn-block" id="login-btn" onclick="AdminController.handleLogin()">
+        🔐 MASUK
+      </button>
+
+      <div style="margin-top:16px;">
+        <button class="btn btn-ghost btn-block" onclick="AdminController.handleRegister()" style="min-height:44px;">
+          Belum punya akun? Daftar
+        </button>
+      </div>
+
+      <div style="margin-top:16px;">
+        <a href="index.html" class="btn btn-ghost" style="min-width:auto;padding:8px 16px;font-size:0.9rem;">← Kembali ke Beranda</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN PANEL ===== -->
+  <div class="admin-page" id="admin-panel" style="display:none;">
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand-icon">🧮</div>
+        <div>
+          <div class="sidebar-brand-text">Numerasi R1</div>
+          <div class="sidebar-brand-sub">Admin Panel</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-section="dashboard">
+          <span class="nav-icon">📊</span> Dashboard
+        </button>
+        <button class="nav-item" data-section="questions">
+          <span class="nav-icon">📝</span> Kelola Soal
+        </button>
+        <button class="nav-item" data-section="game">
+          <span class="nav-icon">🎮</span> Kelola Game
+        </button>
+        <button class="nav-item" data-section="results">
+          <span class="nav-icon">📈</span> Hasil & Export
+        </button>
+
+        <div class="nav-divider"></div>
+
+        <a href="index.html" class="nav-item">
+          <span class="nav-icon">🏠</span> Beranda
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px;">
+          Halo, <strong id="admin-name">Admin</strong>
+        </div>
+        <button class="btn btn-ghost" onclick="AdminController.handleLogout()">
+          🚪 Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Sidebar overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="document.getElementById('admin-sidebar').classList.remove('open');this.classList.remove('active');"></div>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Topbar -->
+      <div class="admin-topbar">
+        <button class="mobile-menu-btn" onclick="document.getElementById('admin-sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('active');">
+          ☰
+        </button>
+        <h2 id="topbar-title" class="topbar-title">📊 Dashboard</h2>
+        <div class="topbar-actions">
+          <!-- empty for now -->
+        </div>
+      </div>
+
+      <!-- ===== DASHBOARD SECTION ===== -->
+      <div class="admin-section active" id="section-dashboard">
+        <div class="stats-grid">
+          <div class="card stat-card">
+            <div class="stat-icon purple">📝</div>
+            <div>
+              <div class="stat-value" id="stat-questions">0</div>
+              <div class="stat-label">Total Soal</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon teal">🎮</div>
+            <div>
+              <div class="stat-value" id="stat-sessions">0</div>
+              <div class="stat-label">Total Game</div>
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-icon gold">👥</div>
+            <div>
+              <div class="stat-value" id="stat-players">0</div>
+              <div class="stat-label">Total Pemain</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-bottom:16px;">🕐 Game Terakhir</h3>
+          <div id="recent-games">
+            <p style="color:var(--text-muted);text-align:center;padding:20px;">Belum ada game</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== QUESTIONS SECTION ===== -->
+      <div class="admin-section" id="section-questions">
+        <!-- Toolbar -->
+        <div class="list-toolbar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="input" id="search-questions" placeholder="Cari soal..."
+                   oninput="AdminController.searchQuestions()">
+          </div>
+          <div class="filter-group">
+            <select class="select" id="filter-category" onchange="AdminController.searchQuestions()">
+              <option value="">Semua Kategori</option>
+              <option value="penjumlahan">➕ Penjumlahan</option>
+              <option value="pengurangan">➖ Pengurangan</option>
+              <option value="perkalian">✖️ Perkalian</option>
+              <option value="pembagian">➗ Pembagian</option>
+              <option value="campuran">🔢 Campuran</option>
+              <option value="cerita">📖 Cerita</option>
+            </select>
+            <button class="btn btn-primary" onclick="AdminController.openQuestionModal()">
+              ➕ Tambah Soal
+            </button>
+          </div>
+        </div>
+
+        <!-- Questions Table -->
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Soal</th>
+                <th>Kategori</th>
+                <th>Kesulitan</th>
+                <th>Poin</th>
+                <th>Waktu</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="questions-tbody">
+              <tr>
+                <td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted);">
+                  Memuat soal...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== GAME MANAGEMENT SECTION ===== -->
+      <div class="admin-section" id="section-game">
+        <!-- Game Setup -->
+        <div id="game-setup">
+          <div class="game-control">
+            <!-- Create Game -->
+            <div class="card control-card">
+              <h3>🎮 Buat Game Baru</h3>
+
+              <div class="input-group" style="margin-bottom:16px;">
+                <label for="game-title">Judul Game</label>
+                <input type="text" id="game-title" class="input" placeholder="Contoh: Lomba Matematika Kelas 10A">
+              </div>
+
+              <div style="margin-bottom:16px;">
+                <div class="flex-between" style="margin-bottom:8px;">
+                  <label style="font-family:var(--font-heading);font-weight:500;font-size:0.9rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;">Pilih Soal</label>
+                  <button class="btn btn-ghost" id="select-all-questions" style="min-width:auto;min-height:auto;padding:6px 12px;font-size:0.8rem;">
+                    Pilih Semua
+                  </button>
+                </div>
+                <div id="question-selection" style="max-height:300px;overflow-y:auto;background:var(--bg-surface);border-radius:var(--radius-md);padding:12px 16px;">
+                  <p style="color:var(--text-muted);text-align:center;padding:20px;">
+                    Memuat soal... <br><small>Pastikan sudah ada soal di database</small>
+                  </p>
+                </div>
+              </div>
+
+              <button class="btn btn-primary btn-lg btn-block" onclick="AdminController.createGame()">
+                🚀 Buat Game & Generate PIN
+              </button>
+            </div>
+
+            <!-- Instructions -->
+            <div class="card control-card">
+              <h3>📋 Panduan</h3>
+              <div style="display:flex;flex-direction:column;gap:16px;color:var(--text-secondary);">
+                <div class="flex gap-md" style="align-items:flex-start;">
+                  <div style="width:36px;height:36px;border-radius:50%;background:rgba(108,99,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;color:var(--primary-light);">1</div>
+                  <div>
+                    <strong style="color:var(--text-primary);">Tambah Soal</strong>
+                    <p style="font-size:0.9rem;margin-top:4px;">Buat soal di menu "Kelola Soal" terlebih dahulu.</p>
+                  </div>
+                </div>
+                <div class="flex gap-md" style="align-items:flex-start;">
+                  <div style="width:36px;height:36px;border-radius:50%;background:rgba(0,212,170,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;color:var(--secondary);">2</div>
+                  <div>
+                    <strong style="color:var(--text-primary);">Buat Game</strong>
+                    <p style="font-size:0.9rem;margin-top:4px;">Pilih soal dan generate PIN. Bagikan PIN ke pemain.</p>
+                  </div>
+                </div>
+                <div class="flex gap-md" style="align-items:flex-start;">
+                  <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,217,61,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;color:var(--accent-gold);">3</div>
+                  <div>
+                    <strong style="color:var(--text-primary);">Mulai & Kontrol</strong>
+                    <p style="font-size:0.9rem;margin-top:4px;">Mulai game saat semua pemain bergabung. Kontrol navigasi soal.</p>
+                  </div>
+                </div>
+                <div class="flex gap-md" style="align-items:flex-start;">
+                  <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,107,107,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;color:var(--accent-coral);">4</div>
+                  <div>
+                    <strong style="color:var(--text-primary);">Lihat Hasil</strong>
+                    <p style="font-size:0.9rem;margin-top:4px;">Akhiri game untuk melihat podium dan download hasil.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game Live Control (hidden until game created) -->
+        <div id="game-live" style="display:none;">
+          <div class="game-control">
+            <!-- Live Control -->
+            <div class="card control-card">
+              <h3>🕹️ Kontrol Game</h3>
+
+              <div class="game-pin-display">
+                <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:4px;">KODE GAME</div>
+                <div class="pin" id="live-game-pin">------</div>
+              </div>
+
+              <div style="margin-bottom:16px;padding:12px;background:var(--bg-surface);border-radius:var(--radius-md);">
+                <div class="flex-between" style="margin-bottom:8px;">
+                  <span style="color:var(--text-muted);">Judul:</span>
+                  <span style="font-weight:600;" id="live-game-title">-</span>
+                </div>
+                <div class="flex-between" style="margin-bottom:8px;">
+                  <span style="color:var(--text-muted);">Soal:</span>
+                  <span style="font-weight:600;" id="live-question-count">0</span>
+                </div>
+                <div class="flex-between" style="margin-bottom:8px;">
+                  <span style="color:var(--text-muted);">Pemain:</span>
+                  <span style="font-weight:600;color:var(--accent-green);" id="live-player-count">0</span>
+                </div>
+                <div class="flex-between">
+                  <span style="color:var(--text-muted);">Jawaban:</span>
+                  <span style="font-weight:600;" id="live-answer-count">0</span>
+                </div>
+              </div>
+
+              <!-- Current Question Display -->
+              <div id="live-current-question" style="padding:16px;background:var(--bg-surface);border-radius:var(--radius-md);margin-bottom:16px;min-height:80px;display:flex;align-items:center;justify-content:center;">
+                <span style="color:var(--text-muted);">Tekan "Mulai" untuk memulai game</span>
+              </div>
+
+              <div class="control-buttons">
+                <button class="btn btn-secondary" id="btn-start-game" onclick="AdminController.startGame()">▶️ Mulai</button>
+                <button class="btn btn-primary" id="btn-next-question" onclick="AdminController.nextQuestion()" disabled>⏭️ Soal Berikutnya</button>
+                <button class="btn btn-ghost" id="btn-pause-game" onclick="AdminController.pauseGame()" disabled>⏸️ Jeda</button>
+                <button class="btn btn-danger" onclick="AdminController.endGame()">⏹️ Akhiri</button>
+                <button class="btn btn-gold" onclick="AdminController.showPodium()">🏆 Podium</button>
+              </div>
+            </div>
+
+            <!-- Players Monitor -->
+            <div class="card control-card">
+              <h3>👥 Pemain Online</h3>
+              <div class="players-monitor" id="monitor-players">
+                <p style="color:var(--text-muted);text-align:center;padding:20px;">Menunggu pemain bergabung...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== RESULTS SECTION ===== -->
+      <div class="admin-section" id="section-results">
+        <h3 style="margin-bottom:20px;">📈 Riwayat Game & Download Hasil</h3>
+        <div id="results-list">
+          <p style="color:var(--text-muted);text-align:center;padding:40px;">Memuat riwayat game...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===== QUESTION MODAL ===== -->
+  <div class="modal-overlay" id="question-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">Tambah Soal Baru</h3>
+        <button class="btn btn-ghost btn-icon" onclick="AdminController.closeQuestionModal()" style="min-width:auto;min-height:auto;padding:8px;">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="question-form">
+          <!-- Question Text -->
+          <div class="input-group full-width">
+            <label for="q-text">Teks Soal</label>
+            <textarea id="q-text" class="textarea" placeholder="Contoh: Berapa hasil dari 25 × 16?" rows="3"></textarea>
+          </div>
+
+          <!-- Category -->
+          <div class="input-group">
+            <label for="q-category">Kategori</label>
+            <select id="q-category" class="select">
+              <option value="penjumlahan">➕ Penjumlahan</option>
+              <option value="pengurangan">➖ Pengurangan</option>
+              <option value="perkalian">✖️ Perkalian</option>
+              <option value="pembagian">➗ Pembagian</option>
+              <option value="campuran">🔢 Campuran</option>
+              <option value="cerita">📖 Soal Cerita</option>
+            </select>
+          </div>
+
+          <!-- Difficulty -->
+          <div class="input-group">
+            <label for="q-difficulty">Tingkat Kesulitan</label>
+            <select id="q-difficulty" class="select">
+              <option value="1">⭐ Mudah</option>
+              <option value="2">⭐⭐ Sedang</option>
+              <option value="3">⭐⭐⭐ Sulit</option>
+              <option value="4">⭐⭐⭐⭐ Sangat Sulit</option>
+              <option value="5">⭐⭐⭐⭐⭐ Extreme</option>
+            </select>
+          </div>
+
+          <!-- Points -->
+          <div class="input-group">
+            <label for="q-points">Poin</label>
+            <input type="number" id="q-points" class="input" value="10" min="1" max="100">
+          </div>
+
+          <!-- Time Limit -->
+          <div class="input-group">
+            <label for="q-time">Batas Waktu (detik)</label>
+            <input type="number" id="q-time" class="input" value="30" min="5" max="120">
+          </div>
+
+          <!-- Answer Options -->
+          <div class="input-group full-width">
+            <label>Opsi Jawaban</label>
+            <div class="options-edit-list">
+              <div class="option-edit-row">
+                <div class="option-letter">A</div>
+                <input type="text" id="q-option-0" class="input" placeholder="Opsi A">
+                <label class="correct-radio">
+                  <input type="radio" name="correct-answer" value="0"> Benar
+                </label>
+              </div>
+              <div class="option-edit-row">
+                <div class="option-letter">B</div>
+                <input type="text" id="q-option-1" class="input" placeholder="Opsi B">
+                <label class="correct-radio">
+                  <input type="radio" name="correct-answer" value="1"> Benar
+                </label>
+              </div>
+              <div class="option-edit-row">
+                <div class="option-letter">C</div>
+                <input type="text" id="q-option-2" class="input" placeholder="Opsi C">
+                <label class="correct-radio">
+                  <input type="radio" name="correct-answer" value="2"> Benar
+                </label>
+              </div>
+              <div class="option-edit-row">
+                <div class="option-letter">D</div>
+                <input type="text" id="q-option-3" class="input" placeholder="Opsi D">
+                <label class="correct-radio">
+                  <input type="radio" name="correct-answer" value="3"> Benar
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="AdminController.closeQuestionModal()">Batal</button>
+        <button class="btn btn-primary" onclick="AdminController.saveQuestion()">💾 Simpan Soal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <!-- Scripts -->
+  <script src="js/supabase-config.js"></script>
+  <script src="js/local-storage-backend.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/game-engine.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/admin.js"></script>
+
+  <script>
+    // Hide loader when everything is ready
+    window.addEventListener('load', () => {
+      const loader = document.getElementById('page-loader');
+      if (loader) { loader.classList.add('hidden'); setTimeout(() => loader.remove(), 500); }
+    });
+  </script>
+
+  <script>
+    // Load questions for game selection when switching to game tab
+    document.querySelector('.nav-item[data-section="game"]').addEventListener('click', () => {
+      AdminController.loadQuestionsForSelection();
+    });
+  </script>
+</body>
+</html>

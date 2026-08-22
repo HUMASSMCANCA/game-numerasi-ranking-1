@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main — Game Numerasi Ranking 1</title>
+  <meta name="description" content="Bergabung dan mainkan game numerasi interaktif. Masukkan kode game dan mulai bertanding!">
+  <meta name="author" content="Ahmad Sahrul Aziz">
+  <meta name="theme-color" content="#0A0E27">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/play.css">
+</head>
+<body>
+  <div class="play-page">
+
+    <!-- ===== JOIN SECTION ===== -->
+    <div class="game-section active" id="join-section">
+      <div style="position:absolute;top:20px;left:20px;">
+        <a href="index.html" class="btn btn-ghost" style="min-width:auto;padding:10px 16px;">← Beranda</a>
+      </div>
+
+      <div class="join-card glass-card" style="margin:auto;">
+        <div style="font-size:3rem;margin-bottom:16px;">🎮</div>
+        <h2>Gabung <span class="text-gradient">Game</span></h2>
+        <p class="subtitle" style="color:var(--text-secondary);">Masukkan kode game dan nama kamu</p>
+
+        <div class="input-group">
+          <label for="game-code-input">Kode Game</label>
+          <input type="text"
+                 id="game-code-input"
+                 class="input input-pin"
+                 placeholder="000000"
+                 maxlength="6"
+                 inputmode="numeric"
+                 pattern="[0-9]*"
+                 autocomplete="off">
+        </div>
+
+        <div class="input-group">
+          <label for="player-name-input">Nama Kamu</label>
+          <input type="text"
+                 id="player-name-input"
+                 class="input"
+                 placeholder="Masukkan nama..."
+                 maxlength="20"
+                 autocomplete="off"
+                 style="font-size:1.1rem;text-align:center;">
+        </div>
+
+        <div class="input-group">
+          <label>Pilih Warna Avatar</label>
+          <div class="color-picker" id="color-picker"></div>
+        </div>
+
+        <button class="btn btn-primary btn-xl btn-block" id="join-btn" onclick="PlayController.joinGame()">
+          🚀 GABUNG SEKARANG
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== LOBBY SECTION ===== -->
+    <div class="game-section" id="lobby-section">
+      <div class="lobby-header" style="padding-top:40px;">
+        <div style="font-size:2rem;margin-bottom:8px;">🎯</div>
+        <h2>Menunggu Game Dimulai...</h2>
+        <div class="lobby-pin" id="lobby-pin">------</div>
+        <div class="lobby-status">
+          <span class="dot"></span>
+          <span id="player-count">0</span> pemain bergabung
+        </div>
+      </div>
+
+      <div class="players-grid" id="players-grid">
+        <!-- Players will be rendered here -->
+      </div>
+
+      <div class="waiting-state" style="margin-top:32px;">
+        <div class="waiting-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <p style="color:var(--text-muted);">Menunggu admin memulai game...</p>
+      </div>
+    </div>
+
+    <!-- ===== BATTLE SECTION ===== -->
+    <div class="game-section" id="battle-section">
+      <div class="battle-layout">
+        <!-- Main Battle Area -->
+        <div class="battle-main">
+          <!-- Battle Header -->
+          <div class="battle-header">
+            <div class="question-counter" id="question-counter">
+              Soal <span>1</span> dari <span>10</span>
+            </div>
+            <div class="battle-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width:10%"></div>
+              </div>
+            </div>
+            <!-- Timer -->
+            <div class="timer-circle" id="timer-circle">
+              <svg width="100" height="100" viewBox="0 0 100 100">
+                <circle class="timer-bg" cx="50" cy="50" r="44"/>
+                <circle class="timer-progress" id="timer-progress" cx="50" cy="50" r="44"
+                        stroke-dasharray="276.46" stroke-dashoffset="0"/>
+              </svg>
+              <div class="timer-text" id="timer-text">30</div>
+            </div>
+          </div>
+
+          <!-- Waiting State -->
+          <div id="waiting-state" style="display:none;flex:1;" class="flex-center">
+            <div class="waiting-state">
+              <div style="font-size:4rem;">⏳</div>
+              <h2>Bersiap-siap...</h2>
+              <div class="waiting-dots">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question State -->
+          <div id="question-state" style="flex:1;display:flex;flex-direction:column;">
+            <div class="question-area">
+              <div class="question-card">
+                <div class="badge badge-primary question-category" id="question-category">
+                  🔢 Matematika
+                </div>
+                <div class="question-text" id="question-text">
+                  <!-- Question will appear here -->
+                  Menunggu soal...
+                </div>
+                <div class="options-grid" id="options-grid">
+                  <!-- Options will be rendered here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar: Live Ranking -->
+        <aside class="battle-sidebar">
+          <div class="sidebar-header">
+            <h3>🏆 Live Ranking</h3>
+          </div>
+          <div class="ranking-list" id="ranking-list">
+            <!-- Rankings will be rendered here -->
+            <div style="padding:20px;text-align:center;color:var(--text-muted);">
+              <p>Ranking akan muncul saat game dimulai</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Feedback Overlay -->
+      <div class="feedback-overlay" id="feedback-overlay"></div>
+    </div>
+
+  </div>
+
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <!-- Game Scripts -->
+  <script src="js/supabase-config.js"></script>
+  <script src="js/local-storage-backend.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/game-engine.js"></script>
+  <script src="js/play.js"></script>
+</body>
+</html>

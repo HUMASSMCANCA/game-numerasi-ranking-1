@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Numerasi Ranking 1 — Tantangan Matematika Interaktif</title>
+  <meta name="description" content="Game numerasi interaktif real-time multiplayer dengan sistem ranking. Bermain matematika seru bersama teman di papan digital interaktif!">
+  <meta name="author" content="Ahmad Sahrul Aziz">
+  <meta name="theme-color" content="#0A0E27">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+  <div class="landing-page">
+    <!-- Background Glow Effects -->
+    <div class="hero-glow"></div>
+    <div class="hero-glow-secondary"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+      <div class="container">
+        <div class="navbar-inner">
+          <div class="brand">
+            <div class="brand-icon">🧮</div>
+            <div>
+              <div class="brand-text">Numerasi <span class="text-gradient">Ranking 1</span></div>
+              <div class="brand-sub">Interactive Math Game</div>
+            </div>
+          </div>
+          <div class="flex gap-md">
+            <a href="play.html" class="btn btn-ghost">🎮 Main</a>
+            <a href="admin.html" class="btn btn-primary">🔐 Admin</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+      <div class="container">
+        <div class="hero-badge">
+          <span>⚡</span> Real-time Multiplayer Battle
+        </div>
+
+        <h1>
+          Tantangan<br>
+          <span class="text-gradient">Matematika</span>
+          <span class="highlight">Interaktif</span>
+        </h1>
+
+        <p class="hero-description">
+          Uji kemampuan numerasimu dalam pertarungan real-time! Berlomba menjawab soal matematika dengan pemain lain, raih skor tertinggi, dan naik ke puncak podium! 🏆
+        </p>
+
+        <div class="cta-group">
+          <a href="play.html" class="btn btn-primary btn-xl" id="btn-play">
+            🎮 MAIN SEKARANG
+          </a>
+          <a href="admin.html" class="btn btn-ghost btn-xl" id="btn-admin">
+            🛠️ ADMIN PANEL
+          </a>
+        </div>
+
+        <!-- Animated Stats -->
+        <div class="flex flex-center gap-xl" style="animation: fade-in-up 0.6s ease 0.5s both;">
+          <div class="text-center">
+            <div style="font-family:var(--font-heading);font-size:2rem;font-weight:800;color:var(--primary-light);">∞</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);">Pemain</div>
+          </div>
+          <div style="width:1px;height:40px;background:rgba(255,255,255,0.1);"></div>
+          <div class="text-center">
+            <div style="font-family:var(--font-heading);font-size:2rem;font-weight:800;color:var(--secondary);">⚡</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);">Real-time</div>
+          </div>
+          <div style="width:1px;height:40px;background:rgba(255,255,255,0.1);"></div>
+          <div class="text-center">
+            <div style="font-family:var(--font-heading);font-size:2rem;font-weight:800;color:var(--accent-gold);">🏆</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);">Podium</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+      <div class="container">
+        <div class="features-grid">
+          <!-- Feature 1 -->
+          <div class="card feature-card" style="animation-delay:0.1s">
+            <div class="feature-icon purple">⚔️</div>
+            <h3>Battle Mode</h3>
+            <p>Semua pemain berlomba menjawab soal yang sama secara real-time. Siapa tercepat dan tertepat, dialah pemenangnya!</p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div class="card feature-card" style="animation-delay:0.2s">
+            <div class="feature-icon teal">📊</div>
+            <h3>Live Ranking</h3>
+            <p>Lihat ranking update secara real-time selama permainan. Pantau posisimu dan kejar pemain lain!</p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div class="card feature-card" style="animation-delay:0.3s">
+            <div class="feature-icon gold">🏆</div>
+            <h3>Podium Pemenang</h3>
+            <p>Tampilan podium interaktif dengan animasi untuk 3 pemenang teratas. Rayakan kemenangan dengan efek confetti!</p>
+          </div>
+
+          <!-- Feature 4 -->
+          <div class="card feature-card" style="animation-delay:0.4s">
+            <div class="feature-icon coral">🛠️</div>
+            <h3>Admin Panel</h3>
+            <p>Kelola soal dengan mudah, kontrol game secara langsung, dan download hasil dalam format PDF & CSV.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How to Play -->
+    <section style="position:relative;z-index:1;padding:40px 0 80px;">
+      <div class="container text-center">
+        <h2 style="margin-bottom:40px;">Cara <span class="text-gradient">Bermain</span></h2>
+        <div class="features-grid" style="max-width:900px;margin:0 auto;">
+          <div class="card" style="text-align:center;padding:32px;">
+            <div style="font-size:3rem;margin-bottom:16px;">1️⃣</div>
+            <h4>Masukkan Kode</h4>
+            <p>Minta kode game 6 digit dari admin, lalu masukkan di halaman main.</p>
+          </div>
+          <div class="card" style="text-align:center;padding:32px;">
+            <div style="font-size:3rem;margin-bottom:16px;">2️⃣</div>
+            <h4>Jawab Soal</h4>
+            <p>Jawab soal matematika secepat dan seakurat mungkin. Kecepatan menambah poin!</p>
+          </div>
+          <div class="card" style="text-align:center;padding:32px;">
+            <div style="font-size:3rem;margin-bottom:16px;">3️⃣</div>
+            <h4>Raih Podium!</h4>
+            <p>Kumpulkan skor tertinggi dan naik ke podium sebagai pemenang!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+      <div class="container">
+        <p>
+          &copy; 2026 Game Numerasi Ranking 1 — Development <span class="dev-name">Ahmad Sahrul Aziz</span>
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Create floating math symbols
+    document.addEventListener('DOMContentLoaded', () => {
+      const symbols = ['+', '−', '×', '÷', '=', '%', '√', 'π', '∑', '∞', '²', '³', '±', '∫'];
+      const landing = document.querySelector('.landing-page');
+      symbols.forEach((sym, i) => {
+        const el = document.createElement('div');
+        el.className = 'math-float';
+        el.textContent = sym;
+        el.style.cssText = `
+          left: ${5 + Math.random() * 90}%;
+          top: ${5 + Math.random() * 90}%;
+          font-size: ${1.5 + Math.random() * 2.5}rem;
+          animation-duration: ${15 + Math.random() * 25}s;
+          animation-delay: ${Math.random() * 10}s;
+        `;
+        landing.appendChild(el);
+      });
+
+      // Create particles
+      const particlesDiv = document.createElement('div');
+      particlesDiv.className = 'particles';
+      for (let i = 0; i < 25; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const colors = ['#6C63FF', '#00D4AA', '#FFD93D'];
+        p.style.cssText = `
+          left: ${Math.random() * 100}%;
+          width: ${2 + Math.random() * 4}px;
+          height: ${2 + Math.random() * 4}px;
+          background: ${colors[Math.floor(Math.random() * colors.length)]};
+          animation-duration: ${15 + Math.random() * 30}s;
+          animation-delay: ${Math.random() * 20}s;
+        `;
+        particlesDiv.appendChild(p);
+      }
+      landing.appendChild(particlesDiv);
+    });
+  </script>
+</body>
+</html>

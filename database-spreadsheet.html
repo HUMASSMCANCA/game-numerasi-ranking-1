@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Spreadsheet — Game Numerasi Ranking 1</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    
+    :root {
+      --bg: #0f1117;
+      --bg-card: #1a1d28;
+      --bg-row: #1e2130;
+      --bg-row-alt: #232639;
+      --bg-hover: #2a2e44;
+      --border: #2d3148;
+      --text: #e8eaed;
+      --text-muted: #8b8fa3;
+      --primary: #6C63FF;
+      --green: #00D4AA;
+      --gold: #FFD93D;
+      --red: #FF6B6B;
+      --blue: #4DA6FF;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .header {
+      background: linear-gradient(135deg, rgba(108,99,255,0.15), rgba(0,212,170,0.08));
+      border-bottom: 1px solid var(--border);
+      padding: 24px 32px;
+    }
+    .header h1 { font-size: 1.5rem; font-weight: 700; }
+    .header h1 span { background: linear-gradient(135deg, #6C63FF, #00D4AA); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+    .header-stats {
+      display: flex; gap: 24px; margin-top: 16px; flex-wrap: wrap;
+    }
+    .stat-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .stat-pill .num { font-size: 1.4rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .stat-pill .label { font-size: 0.8rem; color: var(--text-muted); }
+
+    .tabs {
+      display: flex; gap: 0; border-bottom: 1px solid var(--border);
+      background: var(--bg-card); padding: 0 24px; overflow-x: auto;
+    }
+    .tab {
+      padding: 14px 24px; font-size: 0.9rem; font-weight: 600;
+      cursor: pointer; border: none; background: none; color: var(--text-muted);
+      border-bottom: 3px solid transparent; transition: all 0.2s;
+      white-space: nowrap; font-family: inherit;
+    }
+    .tab:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .toolbar {
+      padding: 16px 24px; display: flex; gap: 12px; align-items: center;
+      border-bottom: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .toolbar input {
+      background: var(--bg-row); border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 16px; color: var(--text); font-family: inherit; font-size: 0.9rem;
+      outline: none; min-width: 250px;
+    }
+    .toolbar input:focus { border-color: var(--primary); }
+    .btn-export {
+      background: var(--primary); color: #fff; border: none; border-radius: 8px;
+      padding: 10px 20px; font-weight: 600; cursor: pointer; font-family: inherit;
+      font-size: 0.85rem; transition: all 0.2s; margin-left: auto;
+    }
+    .btn-export:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .sheet-container {
+      overflow-x: auto; padding: 0;
+    }
+    .sheet { display: none; }
+    .sheet.active { display: block; }
+
+    table {
+      width: 100%; border-collapse: collapse; font-size: 0.85rem;
+    }
+    thead th {
+      position: sticky; top: 0; z-index: 2;
+      background: var(--bg-card); color: var(--text-muted);
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+      font-size: 0.75rem; padding: 12px 16px; text-align: left;
+      border-bottom: 2px solid var(--border); white-space: nowrap;
+      cursor: pointer; user-select: none;
+    }
+    thead th:hover { color: var(--primary); }
+    thead th::after { content: ' ↕'; font-size: 0.7rem; opacity: 0.4; }
+
+    tbody td {
+      padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-family: 'JetBrains Mono', monospace; font-size: 0.82rem;
+      max-width: 350px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    tbody tr:nth-child(odd) { background: var(--bg-row); }
+    tbody tr:nth-child(even) { background: var(--bg-row-alt); }
+    tbody tr:hover { background: var(--bg-hover); }
+
+    .badge {
+      display: inline-block; padding: 3px 10px; border-radius: 6px;
+      font-size: 0.75rem; font-weight: 600; font-family: 'Inter', sans-serif;
+    }
+    .badge-green { background: rgba(0,212,170,0.15); color: var(--green); }
+    .badge-red { background: rgba(255,107,107,0.15); color: var(--red); }
+    .badge-blue { background: rgba(77,166,255,0.15); color: var(--blue); }
+    .badge-gold { background: rgba(255,217,61,0.15); color: var(--gold); }
+    .badge-purple { background: rgba(108,99,255,0.15); color: var(--primary); }
+
+    .color-dot {
+      display: inline-block; width: 14px; height: 14px; border-radius: 50%;
+      vertical-align: middle; margin-right: 6px;
+    }
+
+    .row-num {
+      color: var(--text-muted); font-size: 0.75rem; text-align: center;
+      width: 40px; min-width: 40px;
+    }
+
+    .footer {
+      padding: 16px 24px; border-top: 1px solid var(--border);
+      color: var(--text-muted); font-size: 0.8rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .header { padding: 16px; }
+      .tabs { padding: 0 12px; }
+      .tab { padding: 12px 16px; font-size: 0.8rem; }
+      .toolbar { padding: 12px; }
+      .toolbar input { min-width: 150px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>🧮 Database <span>Spreadsheet</span></h1>
+    <p>Game Numerasi Ranking 1 — Data dari Supabase</p>
+    <div class="header-stats">
+      <div class="stat-pill">
+        <div><div class="num" style="color:var(--primary)">12</div><div class="label">Soal</div></div>
+      </div>
+      <div class="stat-pill">
+        <div><div class="num" style="color:var(--green)">1</div><div class="label">Game</div></div>
+      </div>
+      <div class="stat-pill">
+        <div><div class="num" style="color:var(--gold)">6</div><div class="label">Pemain</div></div>
+      </div>
+      <div class="stat-pill">
+        <div><div class="num" style="color:var(--blue)">30</div><div class="label">Jawaban</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('questions')">📝 Questions (12)</button>
+    <button class="tab" onclick="switchTab('sessions')">🎮 Game Sessions (1)</button>
+    <button class="tab" onclick="switchTab('players')">👥 Players (6)</button>
+    <button class="tab" onclick="switchTab('answers')">📊 Answers (30)</button>
+  </div>
+
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="🔍 Cari data..." oninput="filterTable()">
+    <button class="btn-export" onclick="exportCSV()">📥 Export CSV</button>
+  </div>
+
+  <div class="sheet-container">
+    <!-- QUESTIONS SHEET -->
+    <div class="sheet active" id="sheet-questions">
+      <table id="table-questions">
+        <thead><tr>
+          <th class="row-num">#</th>
+          <th>Soal</th>
+          <th>Kategori</th>
+          <th>Kesulitan</th>
+          <th>Opsi A</th>
+          <th>Opsi B</th>
+          <th>Opsi C</th>
+          <th>Opsi D</th>
+          <th>Jawaban Benar</th>
+          <th>Poin</th>
+          <th>Waktu (s)</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- SESSIONS SHEET -->
+    <div class="sheet" id="sheet-sessions">
+      <table id="table-sessions">
+        <thead><tr>
+          <th class="row-num">#</th>
+          <th>Judul</th>
+          <th>Kode PIN</th>
+          <th>Status</th>
+          <th>Jumlah Soal</th>
+          <th>Dibuat</th>
+          <th>Dimulai</th>
+          <th>Selesai</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- PLAYERS SHEET -->
+    <div class="sheet" id="sheet-players">
+      <table id="table-players">
+        <thead><tr>
+          <th class="row-num">#</th>
+          <th>Nama</th>
+          <th>Warna</th>
+          <th>Skor</th>
+          <th>Benar</th>
+          <th>Salah</th>
+          <th>Akurasi</th>
+          <th>Streak Max</th>
+          <th>Bergabung</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- ANSWERS SHEET -->
+    <div class="sheet" id="sheet-answers">
+      <table id="table-answers">
+        <thead><tr>
+          <th class="row-num">#</th>
+          <th>Pemain</th>
+          <th>Soal</th>
+          <th>Jawaban</th>
+          <th>Status</th>
+          <th>Waktu (s)</th>
+          <th>Poin</th>
+          <th>Waktu Jawab</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span id="footer-info">12 baris</span>
+    <span>© 2026 Game Numerasi Ranking 1 — Ahmad Sahrul Aziz</span>
+  </div>
+
+<script>
+// ============ DATA ============
+const questions = [
+  { text: "Berapa hasil dari 125 + 378?", cat: "penjumlahan", diff: 1, opts: ["503","493","513","483"], answer: "503", pts: 10, time: 30 },
+  { text: "Berapa hasil dari 1.256 + 3.744?", cat: "penjumlahan", diff: 2, opts: ["5.000","4.900","5.100","4.800"], answer: "5.000", pts: 15, time: 30 },
+  { text: "Berapa hasil dari 850 - 376?", cat: "pengurangan", diff: 1, opts: ["474","484","464","494"], answer: "474", pts: 10, time: 30 },
+  { text: "Berapa hasil dari 5.000 - 2.187?", cat: "pengurangan", diff: 2, opts: ["2.813","2.713","2.913","2.887"], answer: "2.813", pts: 15, time: 30 },
+  { text: "Berapa hasil dari 25 × 16?", cat: "perkalian", diff: 2, opts: ["400","350","375","425"], answer: "400", pts: 15, time: 30 },
+  { text: "Berapa hasil dari 48 × 25?", cat: "perkalian", diff: 2, opts: ["1.100","1.200","1.150","1.250"], answer: "1.200", pts: 15, time: 25 },
+  { text: "Berapa hasil dari 144 ÷ 12?", cat: "pembagian", diff: 1, opts: ["12","14","11","13"], answer: "12", pts: 10, time: 30 },
+  { text: "Berapa hasil dari 2.450 ÷ 50?", cat: "pembagian", diff: 2, opts: ["49","48","50","47"], answer: "49", pts: 15, time: 25 },
+  { text: "Berapa hasil dari (15 × 8) + (120 ÷ 6)?", cat: "campuran", diff: 3, opts: ["140","130","150","160"], answer: "140", pts: 20, time: 35 },
+  { text: "Berapa nilai dari 3² + 4²?", cat: "campuran", diff: 2, opts: ["25","24","7","12"], answer: "25", pts: 15, time: 25 },
+  { text: "Toko menjual 48 kotak × 25 pensil. Total?", cat: "cerita", diff: 3, opts: ["1.200","1.100","1.250","1.150"], answer: "1.200", pts: 20, time: 45 },
+  { text: "Luas persegi 360cm², panjang 24cm. Lebar?", cat: "cerita", diff: 3, opts: ["15 cm","12 cm","18 cm","14 cm"], answer: "15 cm", pts: 20, time: 40 }
+];
+
+const sessions = [
+  { title: "Uji Coba Game", pin: "615457", status: "finished", qCount: 5, created: "22 Aug 2026 20:08", started: "22 Aug 2026 20:08", finished: "22 Aug 2026 20:08" }
+];
+
+const players = [
+  { name: "Budi", color: "#FF6B6B", score: 65, correct: 5, wrong: 0, streak: 5, joined: "22 Aug 2026 20:08" },
+  { name: "Siti", color: "#6C63FF", score: 50, correct: 4, wrong: 1, streak: 3, joined: "22 Aug 2026 20:08" },
+  { name: "Andi", color: "#00D4AA", score: 35, correct: 3, wrong: 2, streak: 3, joined: "22 Aug 2026 20:08" },
+  { name: "Budi", color: "#FF6B6B", score: 0, correct: 0, wrong: 0, streak: 0, joined: "22 Aug 2026 14:51" },
+  { name: "Siti", color: "#6C63FF", score: 0, correct: 0, wrong: 0, streak: 0, joined: "22 Aug 2026 14:51" },
+  { name: "Andi", color: "#00D4AA", score: 0, correct: 0, wrong: 0, streak: 0, joined: "22 Aug 2026 14:51" }
+];
+
+const answersData = [];
+const soalList = ["125 + 378","1.256 + 3.744","850 - 376","5.000 - 2.187","25 × 16"];
+const correctAns = ["503","5.000","474","2.813","400"];
+["Budi","Siti","Andi"].forEach(name => {
+  soalList.forEach((soal, i) => {
+    const isCorrect = name === "Budi" ? true : name === "Siti" ? i !== 3 : i < 3;
+    answersData.push({
+      player: name, question: soal,
+      answer: isCorrect ? correctAns[i] : "salah",
+      correct: isCorrect,
+      timeTaken: (3 + Math.random() * 20).toFixed(1),
+      points: isCorrect ? [10,15,10,15,15][i] : 0,
+      time: "22 Aug 2026"
+    });
+  });
+});
+
+// ============ RENDER ============
+let currentTab = 'questions';
+
+function catIcon(c) {
+  const m = { penjumlahan:'➕', pengurangan:'➖', perkalian:'✖️', pembagian:'➗', campuran:'🔢', cerita:'📖' };
+  return m[c] || c;
+}
+function diffStars(d) { return '⭐'.repeat(d); }
+function statusBadge(s) {
+  const cls = { waiting:'badge-blue', playing:'badge-purple', paused:'badge-gold', finished:'badge-green' };
+  return `<span class="badge ${cls[s] || ''}">${s}</span>`;
+}
+
+function renderQuestions() {
+  const tbody = document.querySelector('#table-questions tbody');
+  tbody.innerHTML = questions.map((q, i) => `
+    <tr>
+      <td class="row-num">${i+1}</td>
+      <td style="font-family:Inter,sans-serif;max-width:300px">${q.text}</td>
+      <td><span class="badge badge-purple">${catIcon(q.cat)} ${q.cat}</span></td>
+      <td>${diffStars(q.diff)}</td>
+      <td>${q.opts[0]}</td><td>${q.opts[1]}</td><td>${q.opts[2]}</td><td>${q.opts[3]}</td>
+      <td><span class="badge badge-green">${q.answer}</span></td>
+      <td><span class="badge badge-gold">${q.pts}</span></td>
+      <td>${q.time}s</td>
+    </tr>
+  `).join('');
+}
+
+function renderSessions() {
+  const tbody = document.querySelector('#table-sessions tbody');
+  tbody.innerHTML = sessions.map((s, i) => `
+    <tr>
+      <td class="row-num">${i+1}</td>
+      <td style="font-family:Inter,sans-serif">${s.title}</td>
+      <td><span class="badge badge-blue" style="font-size:0.9rem;letter-spacing:2px">${s.pin}</span></td>
+      <td>${statusBadge(s.status)}</td>
+      <td>${s.qCount}</td>
+      <td>${s.created}</td><td>${s.started}</td><td>${s.finished}</td>
+    </tr>
+  `).join('');
+}
+
+function renderPlayers() {
+  const tbody = document.querySelector('#table-players tbody');
+  tbody.innerHTML = players.map((p, i) => {
+    const total = p.correct + p.wrong;
+    const acc = total > 0 ? Math.round(p.correct / total * 100) : 0;
+    return `
+    <tr>
+      <td class="row-num">${i+1}</td>
+      <td style="font-family:Inter,sans-serif;font-weight:600"><span class="color-dot" style="background:${p.color}"></span>${p.name}</td>
+      <td><span class="color-dot" style="background:${p.color}"></span>${p.color}</td>
+      <td style="font-weight:700;color:var(--primary)">${p.score}</td>
+      <td><span class="badge badge-green">${p.correct}</span></td>
+      <td><span class="badge badge-red">${p.wrong}</span></td>
+      <td>${acc > 0 ? `<span class="badge ${acc >= 80 ? 'badge-green' : acc >= 50 ? 'badge-gold' : 'badge-red'}">${acc}%</span>` : '-'}</td>
+      <td>${p.streak}</td>
+      <td>${p.joined}</td>
+    </tr>
+  `}).join('');
+}
+
+function renderAnswers() {
+  const tbody = document.querySelector('#table-answers tbody');
+  tbody.innerHTML = answersData.map((a, i) => `
+    <tr>
+      <td class="row-num">${i+1}</td>
+      <td style="font-family:Inter,sans-serif;font-weight:500">${a.player}</td>
+      <td style="font-family:Inter,sans-serif">${a.question}</td>
+      <td>${a.answer}</td>
+      <td>${a.correct ? '<span class="badge badge-green">✅ Benar</span>' : '<span class="badge badge-red">❌ Salah</span>'}</td>
+      <td>${a.timeTaken}s</td>
+      <td><span class="badge ${a.points > 0 ? 'badge-gold' : 'badge-red'}">+${a.points}</span></td>
+      <td>${a.time}</td>
+    </tr>
+  `).join('');
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sheet').forEach(s => s.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('sheet-' + tab).classList.add('active');
+  const counts = { questions: 12, sessions: 1, players: 6, answers: 30 };
+  document.getElementById('footer-info').textContent = counts[tab] + ' baris';
+  document.getElementById('search').value = '';
+}
+
+function filterTable() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const sheet = document.querySelector('.sheet.active');
+  const rows = sheet.querySelectorAll('tbody tr');
+  let shown = 0;
+  rows.forEach(r => {
+    const match = r.textContent.toLowerCase().includes(q);
+    r.style.display = match ? '' : 'none';
+    if (match) shown++;
+  });
+  document.getElementById('footer-info').textContent = shown + ' baris';
+}
+
+function exportCSV() {
+  const sheet = document.querySelector('.sheet.active');
+  const table = sheet.querySelector('table');
+  let csv = [];
+  table.querySelectorAll('tr').forEach(row => {
+    const cols = [];
+    row.querySelectorAll('th, td').forEach(cell => {
+      cols.push('"' + cell.textContent.replace(/"/g, '""').trim() + '"');
+    });
+    csv.push(cols.join(','));
+  });
+  const blob = new Blob(['\uFEFF' + csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `numerasi_${currentTab}_${new Date().toISOString().slice(0,10)}.csv`;
+  link.click();
+}
+
+// Init
+renderQuestions();
+renderSessions();
+renderPlayers();
+renderAnswers();
+</script>
+</body>
+</html>

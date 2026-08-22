@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏆 Podium Pemenang — Game Numerasi Ranking 1</title>
+  <meta name="description" content="Podium pemenang game numerasi dengan ranking lengkap dan statistik pemain.">
+  <meta name="author" content="Ahmad Sahrul Aziz">
+  <meta name="theme-color" content="#060A1F">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/podium.css">
+</head>
+<body>
+  <div class="podium-page">
+    <!-- Background Effects -->
+    <div class="podium-bg-glow"></div>
+    <div class="podium-bg-rays"></div>
+
+    <!-- Title -->
+    <div class="podium-title">
+      <span class="crown">👑</span>
+      <h1><span class="text-gradient">Pemenang!</span></h1>
+      <p style="color:var(--text-secondary);font-size:1.1rem;">Game Numerasi Ranking 1</p>
+    </div>
+
+    <!-- Podium -->
+    <div class="podium-container" id="podium-container">
+      <!-- Podium slots will be rendered by JS -->
+      <div style="text-align:center;padding:40px;">
+        <div class="spinner" style="margin:0 auto 16px;"></div>
+        <p style="color:var(--text-muted);">Memuat hasil...</p>
+      </div>
+    </div>
+
+    <!-- Full Rankings -->
+    <div class="podium-rankings">
+      <h3>📊 Ranking Lengkap</h3>
+      <div class="full-ranking-list" id="full-ranking-list">
+        <!-- Rankings will be rendered by JS -->
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="podium-actions">
+      <button class="btn btn-primary btn-lg" id="btn-download-pdf">
+        📊 Download PDF
+      </button>
+      <button class="btn btn-secondary btn-lg" id="btn-download-csv">
+        📄 Download CSV
+      </button>
+      <button class="btn btn-ghost btn-lg" onclick="PodiumController.playAgain()">
+        🔄 Main Lagi
+      </button>
+      <button class="btn btn-ghost btn-lg" onclick="PodiumController.goHome()">
+        🏠 Beranda
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <div style="margin-top:40px;text-align:center;position:relative;z-index:2;">
+      <p style="font-size:0.85rem;color:var(--text-muted);">
+        Game Numerasi Ranking 1 — Development <span style="color:var(--primary-light);font-weight:600;">Ahmad Sahrul Aziz</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <!-- Scripts -->
+  <script src="js/supabase-config.js"></script>
+  <script src="js/local-storage-backend.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/podium.js"></script>
+</body>
+</html>

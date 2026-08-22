@@ -11,11 +11,13 @@ const SUPABASE_URL = 'https://idiirkgaqnnlushzfsmp.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlkaWlya2dhcW5ubHVzaHpmc21wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczNzcwMjksImV4cCI6MjEwMjk1MzAyOX0.nqfYprxP0uZbvhd9KvDJDvKCno1KbzonOmyvFTUfmKg';
 
 // Initialize Supabase client
-let supabase;
+var supabase = null;
 
 function initSupabase() {
   if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    var client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    window._supabaseClient = client;
+    supabase = client;
     console.log('✅ Supabase initialized');
     return true;
   } else {

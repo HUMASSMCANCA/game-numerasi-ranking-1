@@ -65,16 +65,21 @@ const AdminController = {
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner spinner-sm"></span> Masuk...';
 
-    const result = await Auth.login(email, password);
+    try {
+      const result = await Auth.login(email, password);
 
-    if (!result.error) {
-      this.showDashboard();
-      this.loadDashboardStats();
-      this.loadQuestions();
+      if (!result.error) {
+        this.showDashboard();
+        this.loadDashboardStats();
+        this.loadQuestions();
+      }
+    } catch (err) {
+      console.error('handleLogin error:', err);
+      showToast(`Error: ${err.message}`, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '🔐 MASUK';
     }
-
-    btn.disabled = false;
-    btn.innerHTML = '🔐 MASUK';
   },
 
   // --- Register (Supabase Auth) ---

@@ -9,86 +9,113 @@ const Auth = {
 
   // Initialize auth state
   async init() {
-    if (!supabase) return;
+    try {
+      if (!supabase) return;
 
-    // Check existing session
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-      this.currentUser = session.user;
-    }
-
-    // Listen for auth changes
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
+      // Check existing session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
         this.currentUser = session.user;
-      } else if (event === 'SIGNED_OUT') {
-        this.currentUser = null;
       }
-    });
+
+      // Listen for auth changes
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          this.currentUser = session.user;
+        } else if (event === 'SIGNED_OUT') {
+          this.currentUser = null;
+        }
+      });
+    } catch (err) {
+      console.error('Auth init error:', err);
+    }
   },
 
   // Admin login
   async login(email, password) {
-    if (!supabase) {
-      showToast('Supabase belum dimuat!', 'error');
-      return { error: { message: 'Supabase not loaded' } };
+    try {
+      if (!supabase) {
+        showToast('Supabase belum dimuat!', 'error');
+        return { error: { message: 'Supabase not loaded' } };
+      }
+
+      console.log('Attempting login for:', email);
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        console.error('Login error:', error);
+        showToast(`Login gagal: ${error.message}`, 'error');
+        return { error };
+      }
+
+      console.log('Login success:', data.user.email);
+      this.currentUser = data.user;
+      showToast('Login berhasil! 🎉', 'success');
+      return { data };
+    } catch (err) {
+      console.error('Login exception:', err);
+      showToast(`Login error: ${err.message}`, 'error');
+      return { error: { message: err.message } };
     }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) {
-      showToast(`Login gagal: ${error.message}`, 'error');
-      return { error };
-    }
-
-    this.currentUser = data.user;
-    showToast('Login berhasil! 🎉', 'success');
-    return { data };
   },
 
   // Admin register
   async register(email, password, name) {
-    if (!supabase) {
-      showToast('Supabase belum dimuat!', 'error');
-      return { error: { message: 'Supabase not loaded' } };
-    }
-
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { name }
+    try {
+      if (!supabase) {
+        showToast('Supabase belum dimuat!', 'error');
+        return { error: { message: 'Supabase not loaded' } };
       }
-    });
 
-    if (error) {
-      showToast(`Registrasi gagal: ${error.message}`, 'error');
-      return { error };
-    }
-
-    // Insert into admins table
-    if (data.user) {
-      await supabase.from('admins').insert({
-        id: data.user.id,
-        email: email,
-        name: name
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { name }
+        }
       });
-    }
 
-    showToast('Registrasi berhasil! Silakan cek email untuk verifikasi.', 'success');
-    return { data };
+      if (error) {
+        showToast(`Registrasi gagal: ${error.message}`, 'error');
+        return { error };
+      }
+
+      // Try to insert into admins table (may fail due to RLS, that's OK)
+      if (data.user) {
+        try {
+          await supabase.from('admins').insert({
+            id: data.user.id,
+            email: email,
+            name: name
+          });
+        } catch (e) {
+          console.warn('Admin table insert skipped:', e.message);
+        }
+      }
+
+      showToast('Registrasi berhasil! Silakan login.', 'success');
+      return { data };
+    } catch (err) {
+      console.error('Register exception:', err);
+      showToast(`Register error: ${err.message}`, 'error');
+      return { error: { message: err.message } };
+    }
   },
 
   // Logout
   async logout() {
-    if (!supabase) return;
-
-    await supabase.auth.signOut();
-    this.currentUser = null;
-    showToast('Berhasil logout', 'info');
+    try {
+      if (!supabase) return;
+      await supabase.auth.signOut();
+      this.currentUser = null;
+      showToast('Berhasil logout', 'info');
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
   },
 
   // Check if logged in

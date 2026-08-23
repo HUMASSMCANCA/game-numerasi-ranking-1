@@ -492,6 +492,10 @@ const AdminController = {
     window.open(`podium.html?session=${GameEngine.sessionId}`, '_blank');
   },
 
+  async showProjector() {
+    window.open(`projector.html?pin=${GameEngine.gameCode}`, '_blank');
+  },
+
   updateCurrentQuestion() {
     const el = document.getElementById('live-current-question');
     const q = GameEngine.getCurrentQuestion();

@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📺 Tampilan Proyektor — Numerasi R1</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📺</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a1a;
+      --bg-card: rgba(255,255,255,0.04);
+      --primary: #6C63FF;
+      --primary-glow: rgba(108,99,255,0.3);
+      --secondary: #00D4AA;
+      --gold: #FFD93D;
+      --silver: #C0C0C0;
+      --bronze: #CD7F32;
+      --coral: #FF6B6B;
+      --text: #EAEAEA;
+      --text-muted: #888;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* === JOIN SCREEN === */
+    .join-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .join-screen h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #6C63FF, #00D4AA);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .join-screen p { color: var(--text-muted); font-size: 1.2rem; }
+
+    .join-box {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .join-box input {
+      background: rgba(255,255,255,0.06);
+      border: 2px solid rgba(108,99,255,0.3);
+      border-radius: 16px;
+      padding: 16px 24px;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+      width: 300px;
+      letter-spacing: 8px;
+      font-family: 'Outfit', monospace;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    .join-box input:focus { border-color: var(--primary); }
+
+    .btn-join {
+      background: linear-gradient(135deg, #6C63FF, #8B83FF);
+      border: none;
+      color: #fff;
+      padding: 16px 40px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      border-radius: 16px;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-join:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px var(--primary-glow);
+    }
+
+    /* === MAIN PROJECTOR LAYOUT === */
+    .projector {
+      display: none;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    .projector.active { display: flex; }
+
+    /* Header Bar */
+    .proj-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 40px;
+      background: rgba(255,255,255,0.02);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .proj-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .proj-pin {
+      background: linear-gradient(135deg, var(--primary), #8B83FF);
+      padding: 8px 24px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: 4px;
+    }
+
+    .proj-meta {
+      display: flex;
+      gap: 24px;
+      font-size: 1rem;
+      color: var(--text-muted);
+    }
+
+    .proj-meta span { font-weight: 600; color: var(--text); }
+
+    /* Main Content */
+    .proj-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Question Panel (Left) */
+    .proj-question-panel {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .proj-question-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 24px;
+      padding: 48px;
+      max-width: 700px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .proj-q-number {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .proj-q-category {
+      display: inline-block;
+      background: rgba(108,99,255,0.15);
+      color: var(--primary);
+      padding: 6px 20px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .proj-q-text {
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 32px;
+    }
+
+    .proj-q-type-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .proj-q-type-badge.mc { background: rgba(108,99,255,0.15); color: #6C63FF; }
+    .proj-q-type-badge.essay { background: rgba(255,165,0,0.15); color: #FFA500; }
+
+    .proj-answer-count {
+      margin-top: 24px;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+    }
+
+    .proj-answer-count span {
+      font-weight: 800;
+      font-size: 2rem;
+      color: var(--secondary);
+    }
+
+    .proj-timer {
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--secondary);
+      margin-top: 16px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .proj-timer.warning { color: var(--coral); animation: pulse 0.5s ease infinite; }
+
+    /* Waiting screen */
+    .proj-waiting {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .proj-waiting h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #6C63FF, #00D4AA);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .proj-waiting p { font-size: 1.3rem; color: var(--text-muted); }
+
+    /* Ranking Panel (Right) */
+    .proj-ranking-panel {
+      width: 380px;
+      background: rgba(255,255,255,0.02);
+      border-left: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .proj-ranking-header {
+      padding: 20px 24px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .proj-ranking-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 16px;
+    }
+
+    .proj-rank-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      margin: 4px 0;
+      border-radius: 14px;
+      transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+      background: transparent;
+      position: relative;
+    }
+
+    .proj-rank-item.top-1 {
+      background: linear-gradient(135deg, rgba(255,217,61,0.12), rgba(255,217,61,0.04));
+      border: 1px solid rgba(255,217,61,0.15);
+    }
+
+    .proj-rank-item.top-2 {
+      background: linear-gradient(135deg, rgba(192,192,192,0.08), rgba(192,192,192,0.02));
+      border: 1px solid rgba(192,192,192,0.1);
+    }
+
+    .proj-rank-item.top-3 {
+      background: linear-gradient(135deg, rgba(205,127,50,0.08), rgba(205,127,50,0.02));
+      border: 1px solid rgba(205,127,50,0.1);
+    }
+
+    .proj-rank-pos {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.05);
+      color: var(--text-muted);
+    }
+
+    .top-1 .proj-rank-pos { background: linear-gradient(135deg, #FFD93D, #FFA500); color: #000; }
+    .top-2 .proj-rank-pos { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); color: #000; }
+    .top-3 .proj-rank-pos { background: linear-gradient(135deg, #CD7F32, #A0652A); color: #fff; }
+
+    .proj-rank-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .proj-rank-name {
+      flex: 1;
+      font-weight: 600;
+      font-size: 1.05rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .proj-rank-score {
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--primary);
+      font-variant-numeric: tabular-nums;
+      min-width: 60px;
+      text-align: right;
+    }
+
+    .top-1 .proj-rank-score { color: var(--gold); }
+    .top-2 .proj-rank-score { color: var(--silver); }
+    .top-3 .proj-rank-score { color: var(--bronze); }
+
+    /* Footer */
+    .proj-footer {
+      padding: 12px 40px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255,255,255,0.03);
+    }
+
+    /* Particles */
+    .particle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0.15;
+      animation: float-particle linear infinite;
+    }
+
+    @keyframes float-particle {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.15; }
+      90% { opacity: 0.15; }
+      100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    @keyframes slide-in {
+      from { transform: translateX(30px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .proj-rank-item { animation: slide-in 0.4s ease backwards; }
+
+    /* Fullscreen button */
+    .btn-fullscreen {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      padding: 8px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    .btn-fullscreen:hover { background: rgba(255,255,255,0.1); }
+
+    /* Progress bar */
+    .proj-progress {
+      height: 4px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .proj-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 0.5s ease;
+      border-radius: 4px;
+    }
+
+    /* Hide scrollbar */
+    .proj-ranking-list::-webkit-scrollbar { width: 4px; }
+    .proj-ranking-list::-webkit-scrollbar-track { background: transparent; }
+    .proj-ranking-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <!-- JOIN SCREEN -->
+  <div class="join-screen" id="join-screen">
+    <h1>📺 Tampilan Proyektor</h1>
+    <p>Masukkan kode game untuk menampilkan leaderboard langsung</p>
+    <div class="join-box">
+      <input type="text" id="proj-code-input" placeholder="000000" maxlength="6" autocomplete="off">
+      <button class="btn-join" onclick="ProjectorView.connect()">🔗 Hubungkan</button>
+    </div>
+  </div>
+
+  <!-- PROJECTOR VIEW -->
+  <div class="projector" id="projector-view">
+    <!-- Header -->
+    <div class="proj-header">
+      <div class="proj-title">
+        📺 <span id="proj-game-title">Game Numerasi</span>
+      </div>
+      <div class="proj-meta">
+        <div>PIN: <span class="proj-pin" id="proj-game-pin">------</span></div>
+        <div>Pemain: <span id="proj-player-count">0</span></div>
+        <button class="btn-fullscreen" onclick="ProjectorView.toggleFullscreen()">⛶ Layar Penuh</button>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="proj-progress">
+      <div class="proj-progress-fill" id="proj-progress-fill" style="width:0%"></div>
+    </div>
+
+    <!-- Body -->
+    <div class="proj-body">
+      <!-- Question Panel -->
+      <div class="proj-question-panel" id="proj-question-panel">
+        <!-- Waiting State -->
+        <div class="proj-waiting" id="proj-waiting">
+          <h2>⏳ Menunggu Game Dimulai</h2>
+          <p>Pemain sedang bergabung...</p>
+          <div style="font-size:5rem;margin-top:20px;">🎮</div>
+        </div>
+
+        <!-- Question State -->
+        <div class="proj-question-card" id="proj-question-card" style="display:none;">
+          <div class="proj-q-number" id="proj-q-number">SOAL 1 / 10</div>
+          <div class="proj-q-category" id="proj-q-category">🔢 Matematika</div>
+          <div class="proj-q-text" id="proj-q-text">Menunggu soal...</div>
+          <div id="proj-q-type">
+            <span class="proj-q-type-badge mc" id="proj-q-type-badge">📝 Pilihan Ganda</span>
+          </div>
+          <div class="proj-timer" id="proj-timer">30</div>
+          <div class="proj-answer-count">
+            Sudah menjawab: <span id="proj-answered-count">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ranking Panel -->
+      <div class="proj-ranking-panel">
+        <div class="proj-ranking-header">🏆 Live Ranking</div>
+        <div class="proj-ranking-list" id="proj-ranking-list">
+          <div style="padding:40px 20px;text-align:center;color:var(--text-muted);">
+            Ranking akan muncul saat pemain bergabung
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="proj-footer">
+      Game Numerasi Ranking 1 — Tampilan Proyektor
+    </div>
+  </div>
+
+  <!-- Background particles -->
+  <script>
+    for (var i = 0; i < 15; i++) {
+      var p = document.createElement('div');
+      p.className = 'particle';
+      var size = Math.random() * 8 + 3;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.background = ['#6C63FF','#00D4AA','#FFD93D','#FF6B6B'][Math.floor(Math.random()*4)];
+      p.style.animationDuration = (Math.random() * 20 + 15) + 's';
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      document.body.appendChild(p);
+    }
+  </script>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+
+  <script>
+    var ProjectorView = {
+      sessionId: null,
+      gameCode: null,
+      questions: [],
+      players: [],
+      currentQuestionIndex: -1,
+      status: 'waiting',
+      timerInterval: null,
+      timeRemaining: 0,
+      pollInterval: null,
+
+      // Connect to game
+      async connect() {
+        var code = document.getElementById('proj-code-input').value.trim();
+        if (!code || code.length < 6) {
+          alert('Masukkan kode game 6 digit!');
+          return;
+        }
+
+        if (!initSupabase()) {
+          alert('Supabase tidak dapat dimuat. Periksa koneksi internet.');
+          return;
+        }
+
+        try {
+          // Find session
+          var result = await supabaseClient.from('game_sessions')
+            .select('*')
+            .eq('game_code', code)
+            .single();
+
+          if (result.error || !result.data) {
+            alert('Game tidak ditemukan! Pastikan kode benar.');
+            return;
+          }
+
+          var session = result.data;
+          this.sessionId = session.id;
+          this.gameCode = session.game_code;
+          this.status = session.status;
+          this.currentQuestionIndex = session.current_question_index || 0;
+
+          // Load questions
+          if (session.question_ids && session.question_ids.length > 0) {
+            var qResult = await supabaseClient.from('questions')
+              .select('*')
+              .in('id', session.question_ids);
+            if (qResult.data) {
+              // Sort by question_ids order
+              var idOrder = session.question_ids;
+              this.questions = qResult.data.sort(function(a, b) {
+                return idOrder.indexOf(a.id) - idOrder.indexOf(b.id);
+              });
+            }
+          }
+
+          // Show projector view
+          document.getElementById('join-screen').style.display = 'none';
+          document.getElementById('projector-view').classList.add('active');
+          document.getElementById('proj-game-pin').textContent = session.game_code;
+          document.getElementById('proj-game-title').textContent = session.title;
+
+          // Load initial players
+          await this.refreshPlayers();
+
+          // Subscribe to realtime
+          this.subscribeToSession();
+          this.subscribeToPlayers();
+          this.subscribeToAnswers();
+
+          // Backup polling
+          this.pollInterval = setInterval(function() {
+            ProjectorView.refreshPlayers();
+            ProjectorView.refreshSession();
+          }, 3000);
+
+          // If already playing, show question
+          if (session.status === 'playing') {
+            this.showQuestion();
+          }
+
+        } catch (err) {
+          alert('Error: ' + err.message);
+          console.error(err);
+        }
+      },
+
+      // Subscribe to session changes
+      subscribeToSession() {
+        supabaseClient
+          .channel('proj-session-' + this.sessionId)
+          .on('postgres_changes', {
+            event: '*', schema: 'public', table: 'game_sessions',
+            filter: 'id=eq.' + this.sessionId
+          }, function(payload) {
+            var session = payload.new;
+            var oldStatus = ProjectorView.status;
+            ProjectorView.status = session.status;
+            ProjectorView.currentQuestionIndex = session.current_question_index || 0;
+
+            if (session.status === 'playing') {
+              ProjectorView.showQuestion();
+            } else if (session.status === 'finished') {
+              ProjectorView.showFinished();
+            }
+          })
+          .subscribe();
+      },
+
+      // Subscribe to players
+      subscribeToPlayers() {
+        supabaseClient
+          .channel('proj-players-' + this.sessionId)
+          .on('postgres_changes', {
+            event: '*', schema: 'public', table: 'players',
+            filter: 'session_id=eq.' + this.sessionId
+          }, function() {
+            ProjectorView.refreshPlayers();
+          })
+          .subscribe();
+      },
+
+      // Subscribe to answers (for count)
+      subscribeToAnswers() {
+        supabaseClient
+          .channel('proj-answers-' + this.sessionId)
+          .on('postgres_changes', {
+            event: 'INSERT', schema: 'public', table: 'answers',
+            filter: 'session_id=eq.' + this.sessionId
+          }, function() {
+            ProjectorView.updateAnswerCount();
+          })
+          .subscribe();
+      },
+
+      // Refresh session
+      async refreshSession() {
+        try {
+          var result = await supabaseClient.from('game_sessions')
+            .select('*').eq('id', this.sessionId).single();
+          if (result.data) {
+            var oldIdx = this.currentQuestionIndex;
+            this.currentQuestionIndex = result.data.current_question_index || 0;
+            this.status = result.data.status;
+
+            if (result.data.status === 'playing' && oldIdx !== this.currentQuestionIndex) {
+              this.showQuestion();
+            }
+            if (result.data.status === 'finished') {
+              this.showFinished();
+            }
+          }
+        } catch (e) {}
+      },
+
+      // Refresh players
+      async refreshPlayers() {
+        try {
+          var result = await supabaseClient.from('players')
+            .select('*')
+            .eq('session_id', this.sessionId)
+            .order('score', { ascending: false });
+
+          if (result.data) {
+            this.players = result.data;
+            document.getElementById('proj-player-count').textContent = this.players.length;
+            this.renderRanking();
+          }
+        } catch (e) {}
+      },
+
+      // Show question
+      showQuestion() {
+        var q = this.questions[this.currentQuestionIndex];
+        if (!q) return;
+
+        document.getElementById('proj-waiting').style.display = 'none';
+        document.getElementById('proj-question-card').style.display = 'block';
+
+        document.getElementById('proj-q-number').textContent = 'SOAL ' + (this.currentQuestionIndex + 1) + ' / ' + this.questions.length;
+
+        var catLabels = {
+          'penjumlahan': '➕ Penjumlahan', 'pengurangan': '➖ Pengurangan',
+          'perkalian': '✖️ Perkalian', 'pembagian': '➗ Pembagian',
+          'campuran': '🔢 Campuran', 'cerita': '📖 Soal Cerita'
+        };
+        document.getElementById('proj-q-category').textContent = catLabels[q.category] || q.category;
+        document.getElementById('proj-q-text').textContent = q.question_text;
+
+        var typeBadge = document.getElementById('proj-q-type-badge');
+        if (q.question_type === 'essay') {
+          typeBadge.textContent = '✍️ Essay';
+          typeBadge.className = 'proj-q-type-badge essay';
+        } else {
+          typeBadge.textContent = '📝 Pilihan Ganda';
+          typeBadge.className = 'proj-q-type-badge mc';
+        }
+
+        // Progress
+        var progress = ((this.currentQuestionIndex + 1) / this.questions.length) * 100;
+        document.getElementById('proj-progress-fill').style.width = progress + '%';
+
+        // Reset answer count
+        document.getElementById('proj-answered-count').textContent = '0';
+
+        // Timer
+        this.startTimer(q.time_limit || 30);
+
+        // Animate card entrance
+        var card = document.getElementById('proj-question-card');
+        card.style.animation = 'none';
+        requestAnimationFrame(function() {
+          card.style.animation = 'slide-in 0.5s ease';
+        });
+      },
+
+      // Timer
+      startTimer(seconds) {
+        this.stopTimer();
+        this.timeRemaining = seconds;
+        var timerEl = document.getElementById('proj-timer');
+        timerEl.textContent = seconds;
+        timerEl.classList.remove('warning');
+
+        this.timerInterval = setInterval(function() {
+          ProjectorView.timeRemaining--;
+          timerEl.textContent = Math.max(0, ProjectorView.timeRemaining);
+
+          if (ProjectorView.timeRemaining <= 5) {
+            timerEl.classList.add('warning');
+          }
+
+          if (ProjectorView.timeRemaining <= 0) {
+            ProjectorView.stopTimer();
+          }
+        }, 1000);
+      },
+
+      stopTimer() {
+        if (this.timerInterval) {
+          clearInterval(this.timerInterval);
+          this.timerInterval = null;
+        }
+      },
+
+      // Update answer count
+      async updateAnswerCount() {
+        try {
+          var q = this.questions[this.currentQuestionIndex];
+          if (!q) return;
+
+          var result = await supabaseClient.from('answers')
+            .select('id', { count: 'exact', head: true })
+            .eq('session_id', this.sessionId)
+            .eq('question_id', q.id);
+
+          document.getElementById('proj-answered-count').textContent = result.count || 0;
+        } catch (e) {}
+      },
+
+      // Render ranking
+      renderRanking() {
+        var list = document.getElementById('proj-ranking-list');
+        if (!this.players || this.players.length === 0) {
+          list.innerHTML = '<div style="padding:40px 20px;text-align:center;color:var(--text-muted);">Menunggu pemain bergabung...</div>';
+          return;
+        }
+
+        var sorted = this.players.slice().sort(function(a, b) { return b.score - a.score; });
+
+        list.innerHTML = sorted.map(function(p, i) {
+          var rankClass = i === 0 ? 'top-1' : i === 1 ? 'top-2' : i === 2 ? 'top-3' : '';
+          var initial = p.name ? p.name.charAt(0).toUpperCase() : '?';
+          var color = p.avatar_color || '#6C63FF';
+          var delay = (i * 0.05);
+
+          return '<div class="proj-rank-item ' + rankClass + '" style="animation-delay:' + delay + 's">' +
+            '<div class="proj-rank-pos">' + (i + 1) + '</div>' +
+            '<div class="proj-rank-avatar" style="background:' + color + '">' + initial + '</div>' +
+            '<div class="proj-rank-name">' + ProjectorView.escapeHtml(p.name) + '</div>' +
+            '<div class="proj-rank-score">' + p.score + '</div>' +
+          '</div>';
+        }).join('');
+      },
+
+      // Show finished
+      showFinished() {
+        this.stopTimer();
+        document.getElementById('proj-question-card').style.display = 'none';
+        document.getElementById('proj-waiting').style.display = 'flex';
+
+        var waitingEl = document.getElementById('proj-waiting');
+        waitingEl.innerHTML = '<h2>🏆 Game Selesai!</h2><p>Selamat kepada para pemenang!</p><div style="font-size:5rem;margin-top:20px;">🎉</div>';
+
+        document.getElementById('proj-progress-fill').style.width = '100%';
+      },
+
+      // Fullscreen
+      toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else {
+          document.exitFullscreen();
+        }
+      },
+
+      // Escape HTML
+      escapeHtml(text) {
+        var div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
+      }
+    };
+
+    // Enter key to connect
+    document.getElementById('proj-code-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') ProjectorView.connect();
+    });
+
+    // Auto-connect from URL ?pin=123456
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var pin = params.get('pin');
+      if (pin) {
+        document.getElementById('proj-code-input').value = pin;
+        // Small delay to ensure Supabase CDN is loaded
+        setTimeout(function() {
+          ProjectorView.connect();
+        }, 500);
+      }
+    })();
+  </script>
+</body>
+</html>

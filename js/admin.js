@@ -315,8 +315,7 @@ const AdminController = {
       category: category,
       difficulty: difficulty,
       points: points,
-      time_limit: timeLimit,
-      created_by: Auth.getUserId()
+      time_limit: timeLimit
     };
 
     if (questionType === 'essay') {

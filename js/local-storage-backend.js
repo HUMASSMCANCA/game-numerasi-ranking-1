@@ -82,8 +82,7 @@ const SupabaseDB = {
         game_code: gameCode,
         question_ids: questionIds,
         status: 'waiting',
-        current_question_index: 0,
-        created_by: createdBy
+        current_question_index: 0
       })
       .select()
       .single();

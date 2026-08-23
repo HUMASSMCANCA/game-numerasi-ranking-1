@@ -84,17 +84,9 @@ const Auth = {
         return { error };
       }
 
-      // Try to insert into admins table (may fail due to RLS, that's OK)
+      // Registration success
       if (data.user) {
-        try {
-          await supabaseClient.from('admins').insert({
-            id: data.user.id,
-            email: email,
-            name: name
-          });
-        } catch (e) {
-          console.warn('Admin table insert skipped:', e.message);
-        }
+        console.log('User registered:', data.user.email);
       }
 
       showToast('Registrasi berhasil! Silakan login.', 'success');

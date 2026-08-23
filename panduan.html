@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panduan Game Numerasi Ranking 1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: A4;
+      margin: 20mm 18mm;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Outfit', 'Segoe UI', sans-serif;
+      color: #1a1a2e;
+      line-height: 1.7;
+      font-size: 11pt;
+      background: #fff;
+    }
+
+    .page-break { page-break-before: always; }
+
+    /* Cover */
+    .cover {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 90vh;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .cover-icon { font-size: 80px; margin-bottom: 24px; }
+
+    .cover h1 {
+      font-size: 36pt;
+      font-weight: 800;
+      background: linear-gradient(135deg, #6C63FF, #00D4AA);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .cover h2 {
+      font-size: 16pt;
+      font-weight: 400;
+      color: #666;
+      margin-bottom: 40px;
+    }
+
+    .cover-meta {
+      font-size: 10pt;
+      color: #999;
+      margin-top: 60px;
+    }
+
+    .cover-url {
+      font-size: 11pt;
+      color: #6C63FF;
+      font-weight: 600;
+      background: #f0f0ff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      margin-top: 20px;
+      display: inline-block;
+    }
+
+    /* TOC */
+    .toc { padding: 40px 0; }
+    .toc h2 { font-size: 18pt; margin-bottom: 24px; color: #6C63FF; }
+
+    .toc-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px dotted #ddd;
+      font-size: 11pt;
+    }
+
+    .toc-item span:first-child { font-weight: 600; }
+    .toc-item span:last-child { color: #6C63FF; font-weight: 700; }
+
+    /* Section headers */
+    h2 {
+      font-size: 18pt;
+      font-weight: 800;
+      color: #6C63FF;
+      margin: 32px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 3px solid #6C63FF;
+    }
+
+    h3 {
+      font-size: 13pt;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin: 20px 0 10px;
+    }
+
+    h4 {
+      font-size: 11pt;
+      font-weight: 600;
+      color: #444;
+      margin: 12px 0 6px;
+    }
+
+    p { margin-bottom: 10px; }
+
+    /* Steps */
+    .step {
+      display: flex;
+      gap: 16px;
+      margin: 12px 0;
+      padding: 14px 16px;
+      background: #f8f8ff;
+      border-radius: 10px;
+      border-left: 4px solid #6C63FF;
+      page-break-inside: avoid;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: #6C63FF;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14pt;
+      flex-shrink: 0;
+    }
+
+    .step-content { flex: 1; }
+    .step-content strong { color: #6C63FF; }
+
+    /* Info boxes */
+    .info-box {
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .info-box.tip {
+      background: #e8fff5;
+      border-left: 4px solid #00D4AA;
+    }
+
+    .info-box.warning {
+      background: #fff8e8;
+      border-left: 4px solid #FFA500;
+    }
+
+    .info-box.danger {
+      background: #ffe8e8;
+      border-left: 4px solid #FF6B6B;
+    }
+
+    .info-box .label {
+      font-weight: 700;
+      font-size: 10pt;
+      margin-bottom: 4px;
+    }
+
+    .tip .label { color: #00A87E; }
+    .warning .label { color: #CC8400; }
+    .danger .label { color: #CC4444; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 10pt;
+      page-break-inside: avoid;
+    }
+
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border: 1px solid #e0e0e0;
+    }
+
+    th {
+      background: #6C63FF;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) { background: #f8f8ff; }
+
+    /* Code */
+    code {
+      background: #f0f0f5;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'Consolas', monospace;
+      font-size: 10pt;
+      color: #6C63FF;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin: 8px 0 12px 24px;
+    }
+
+    li { margin: 4px 0; }
+
+    /* Screenshot placeholder */
+    .screenshot {
+      background: #f0f0f5;
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      padding: 24px;
+      text-align: center;
+      color: #888;
+      margin: 12px 0;
+      font-size: 10pt;
+    }
+
+    /* URL highlight */
+    .url {
+      color: #6C63FF;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    /* Print button */
+    .print-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(135deg, #6C63FF, #8B83FF);
+      color: #fff;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 999;
+      font-weight: 600;
+    }
+
+    .print-bar button {
+      background: #fff;
+      color: #6C63FF;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 11pt;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .print-bar button:hover { background: #f0f0ff; }
+
+    @media print {
+      .print-bar { display: none !important; }
+      body { padding-top: 0; }
+    }
+
+    @media screen {
+      body { padding-top: 56px; }
+    }
+
+    /* Divider */
+    hr {
+      border: none;
+      border-top: 2px solid #eee;
+      margin: 24px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Print Bar (hidden in print) -->
+  <div class="print-bar">
+    <span>📄 Panduan Game Numerasi Ranking 1</span>
+    <button onclick="window.print()">🖨️ Simpan sebagai PDF</button>
+  </div>
+
+  <!-- ============================== -->
+  <!-- COVER PAGE -->
+  <!-- ============================== -->
+  <div class="cover">
+    <div class="cover-icon">🧮</div>
+    <h1>Numerasi Ranking 1</h1>
+    <h2>Panduan Lengkap Penggunaan</h2>
+    <p style="font-size:12pt;color:#666;max-width:500px;">
+      Panduan bermain untuk peserta (murid) dan panduan mengelola game untuk admin (guru).
+    </p>
+    <div class="cover-url">
+      🌐 https://humassmcanca.github.io/game-numerasi-ranking-1/
+    </div>
+    <div class="cover-meta">
+      Developer: Ahmad Sahrul Aziz<br>
+      Versi: 1.0 — Agustus 2026
+    </div>
+  </div>
+
+  <!-- ============================== -->
+  <!-- TABLE OF CONTENTS -->
+  <!-- ============================== -->
+  <div class="page-break"></div>
+  <div class="toc">
+    <h2>📑 Daftar Isi</h2>
+    <div class="toc-item"><span>BAGIAN 1 — Panduan Peserta (Murid)</span><span>3</span></div>
+    <div class="toc-item"><span>&nbsp;&nbsp;&nbsp;1.1 Cara Bergabung ke Game</span><span>3</span></div>
+    <div class="toc-item"><span>&nbsp;&nbsp;&nbsp;1.2 Cara Menjawab Soal</span><span>3</span></div>
+    <div class="toc-item"><span>&nbsp;&nbsp;&nbsp;1.3 Sistem Penilaian</span><span>4</span></div>
+    <div class="toc-item"><span>&nbsp;&nbsp;&nbsp;1.4 Tips & Trik</span><span>4</span></div>
+    <div class="toc-item"><span>BAGIAN 2 — Panduan Admin (Guru)</span><span>5</span></div>
+    <div class="toc-item"><span>&nbsp;&nbsp;&nbsp;2.1 Login ke Admin Panel</span><span>5</span></div>
+    <div class="toc-item"><span>&nbsp;&nbsp;&nbsp;2.2 Dashboard</span><span>5</span></div>
+    <div class="toc-item"><span>&nbsp;&nbsp;&nbsp;2.3 Kelola Soal</span><span>6</span></div>
+    <div class="toc-item"><span>&nbsp;&nbsp;&nbsp;2.4 Kelola Game</span><span>7</span></div>
+    <div class="toc-item"><span>&nbsp;&nbsp;&nbsp;2.5 Koreksi Essay</span><span>8</span></div>
+    <div class="toc-item"><span>&nbsp;&nbsp;&nbsp;2.6 Hasil & Export</span><span>8</span></div>
+    <div class="toc-item"><span>&nbsp;&nbsp;&nbsp;2.7 Tampilan Proyektor</span><span>9</span></div>
+    <div class="toc-item"><span>BAGIAN 3 — Alur Lengkap Game</span><span>10</span></div>
+    <div class="toc-item"><span>BAGIAN 4 — FAQ & Troubleshooting</span><span>10</span></div>
+  </div>
+
+  <!-- ============================== -->
+  <!-- BAGIAN 1: PANDUAN PESERTA -->
+  <!-- ============================== -->
+  <div class="page-break"></div>
+  <h2>📱 BAGIAN 1 — Panduan Peserta (Murid)</h2>
+
+  <h3>1.1 Cara Bergabung ke Game</h3>
+  <p>Untuk bermain, kamu membutuhkan <strong>kode game 6 digit</strong> yang diberikan oleh guru/admin.</p>
+
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      <strong>Buka halaman bermain</strong><br>
+      Buka browser di HP/laptop, akses: <span class="url">https://humassmcanca.github.io/game-numerasi-ranking-1/play.html</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      <strong>Masukkan Kode Game</strong><br>
+      Ketik 6 digit kode game yang diberikan guru ke kolom "Kode Game".
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">3</div>
+    <div class="step-content">
+      <strong>Isi Nama & Pilih Warna</strong><br>
+      Ketik namamu (minimal 2 karakter) dan pilih warna avatar kesukaanmu.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">4</div>
+    <div class="step-content">
+      <strong>Klik "🚀 GABUNG SEKARANG"</strong><br>
+      Kamu akan masuk ke lobby. Tunggu sampai guru memulai game.
+    </div>
+  </div>
+
+  <div class="info-box tip">
+    <div class="label">💡 TIPS</div>
+    Gunakan koneksi internet yang stabil. Jika terputus, refresh halaman — kamu akan otomatis terhubung kembali.
+  </div>
+
+  <h3>1.2 Cara Menjawab Soal</h3>
+
+  <h4>Soal Pilihan Ganda</h4>
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      Baca soal yang muncul di layar. Perhatikan <strong>timer</strong> di atas — waktu terbatas!
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      Klik salah satu pilihan jawaban (A, B, C, atau D). Jawaban langsung terkirim.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">3</div>
+    <div class="step-content">
+      Tombol akan berubah <strong style="color:#00D4AA">hijau</strong> (benar) atau <strong style="color:#FF6B6B">merah</strong> (salah). Jawaban benar ditunjukkan jika salah.
+    </div>
+  </div>
+
+  <h4>Soal Essay</h4>
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      Ketik jawabanmu di kolom teks yang tersedia.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      Klik <strong>"📤 Kirim Jawaban"</strong>. Jawaban akan otomatis diperiksa.
+    </div>
+  </div>
+
+  <div class="info-box warning">
+    <div class="label">⚠️ PERHATIAN</div>
+    Kamu hanya bisa menjawab <strong>satu kali</strong> per soal. Pastikan jawabanmu sudah benar sebelum mengirim! Timer akan terus berjalan meskipun halaman di-refresh.
+  </div>
+
+  <h3>1.3 Sistem Penilaian</h3>
+
+  <table>
+    <tr>
+      <th>Komponen</th>
+      <th>Keterangan</th>
+    </tr>
+    <tr>
+      <td>✅ Jawaban Benar</td>
+      <td>Mendapat poin sesuai tingkat soal (10–20 poin)</td>
+    </tr>
+    <tr>
+      <td>⚡ Bonus Kecepatan</td>
+      <td>Semakin cepat menjawab, semakin tinggi poin bonus</td>
+    </tr>
+    <tr>
+      <td>🔥 Streak</td>
+      <td>Jawaban benar berturut-turut memberi bonus streak</td>
+    </tr>
+    <tr>
+      <td>❌ Jawaban Salah</td>
+      <td>0 poin, streak terputus</td>
+    </tr>
+    <tr>
+      <td>⏰ Waktu Habis</td>
+      <td>Dianggap salah, 0 poin</td>
+    </tr>
+  </table>
+
+  <h3>1.4 Tips & Trik</h3>
+  <ul>
+    <li>Baca soal dengan teliti sebelum menjawab — akurasi lebih penting dari kecepatan.</li>
+    <li>Jaga streak! 3 jawaban benar berturut-turut memberi bonus ekstra.</li>
+    <li>Untuk soal essay, ketik jawaban dengan format yang tepat (misal: <code>503</code> bukan <code>lima ratus tiga</code>, kecuali guru menerimanya).</li>
+    <li>Jangan refresh halaman saat menjawab — timer tetap berjalan!</li>
+    <li>Periksa ranking di sidebar kanan untuk melihat posisimu.</li>
+  </ul>
+
+  <!-- ============================== -->
+  <!-- BAGIAN 2: PANDUAN ADMIN -->
+  <!-- ============================== -->
+  <div class="page-break"></div>
+  <h2>🛠️ BAGIAN 2 — Panduan Admin (Guru)</h2>
+
+  <h3>2.1 Login ke Admin Panel</h3>
+  <p>Admin panel tidak terlihat oleh murid di halaman utama. Akses langsung melalui URL:</p>
+
+  <div class="info-box tip">
+    <div class="label">🔗 URL ADMIN</div>
+    <span class="url">https://humassmcanca.github.io/game-numerasi-ranking-1/admin.html</span>
+  </div>
+
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      <strong>Buka URL admin</strong> di browser.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      Masukkan <strong>email</strong> dan <strong>password</strong> yang sudah terdaftar.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">3</div>
+    <div class="step-content">
+      Klik <strong>"🔐 MASUK"</strong>. Jika belum punya akun, klik "Daftar Baru" untuk registrasi.
+    </div>
+  </div>
+
+  <table>
+    <tr>
+      <th>Akun Default</th>
+      <th>Nilai</th>
+    </tr>
+    <tr>
+      <td>Email</td>
+      <td><code>admin@game.com</code></td>
+    </tr>
+    <tr>
+      <td>Password</td>
+      <td><code>admin123</code></td>
+    </tr>
+  </table>
+
+  <hr>
+
+  <h3>2.2 Dashboard</h3>
+  <p>Halaman utama setelah login. Menampilkan ringkasan statistik:</p>
+  <ul>
+    <li><strong>Total Soal</strong> — Jumlah soal yang tersedia di database</li>
+    <li><strong>Total Sesi</strong> — Jumlah game yang pernah dibuat</li>
+    <li><strong>Total Pemain</strong> — Total pemain yang pernah bergabung</li>
+    <li><strong>Game Terbaru</strong> — Daftar 5 game terakhir dengan status</li>
+  </ul>
+
+  <hr>
+
+  <h3>2.3 Kelola Soal</h3>
+  <p>Menu untuk membuat, mengedit, dan menghapus soal.</p>
+
+  <h4>Tambah Soal Pilihan Ganda</h4>
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      Klik tombol <strong>"+ Tambah Soal"</strong>.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      Pilih tipe <strong>"📝 Pilihan Ganda"</strong> dan kategori soal.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">3</div>
+    <div class="step-content">
+      Isi: tingkat kesulitan, poin, batas waktu (detik).
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">4</div>
+    <div class="step-content">
+      Tulis teks soal, lalu isi opsi A, B, C, D. Tandai jawaban benar dengan klik radio <strong>"BENAR"</strong>.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">5</div>
+    <div class="step-content">
+      Klik <strong>"💾 Simpan Soal"</strong>.
+    </div>
+  </div>
+
+  <h4>Tambah Soal Essay</h4>
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      Klik <strong>"+ Tambah Soal"</strong>, pilih tipe <strong>"✍️ Essay"</strong>.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      Tulis teks soal essay.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">3</div>
+    <div class="step-content">
+      Di kolom <strong>"Jawaban yang Diterima"</strong>, tulis semua jawaban benar yang diterima, pisahkan dengan koma.<br>
+      Contoh: <code>503, lima ratus tiga</code>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">4</div>
+    <div class="step-content">
+      Klik <strong>"💾 Simpan Soal"</strong>. Jawaban murid akan diperiksa otomatis berdasarkan daftar ini.
+    </div>
+  </div>
+
+  <div class="info-box tip">
+    <div class="label">💡 TIPS ESSAY</div>
+    Pencocokan jawaban essay tidak peka huruf besar/kecil. <code>Lima Ratus</code> = <code>lima ratus</code>. Tulis sebanyak mungkin variasi jawaban yang diterima.
+  </div>
+
+  <table>
+    <tr>
+      <th>Kategori Soal</th>
+      <th>Keterangan</th>
+    </tr>
+    <tr><td>➕ Penjumlahan</td><td>Soal penjumlahan</td></tr>
+    <tr><td>➖ Pengurangan</td><td>Soal pengurangan</td></tr>
+    <tr><td>✖️ Perkalian</td><td>Soal perkalian</td></tr>
+    <tr><td>➗ Pembagian</td><td>Soal pembagian</td></tr>
+    <tr><td>🔢 Campuran</td><td>Kombinasi operasi</td></tr>
+    <tr><td>📖 Soal Cerita</td><td>Soal naratif</td></tr>
+  </table>
+
+  <div class="page-break"></div>
+
+  <h3>2.4 Kelola Game</h3>
+  <p>Menu untuk membuat dan mengontrol sesi game.</p>
+
+  <h4>Membuat Game Baru</h4>
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      Klik menu <strong>"🎮 Kelola Game"</strong> di sidebar.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      Isi <strong>judul game</strong> (misal: "Kuis Matematika Bab 3").
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">3</div>
+    <div class="step-content">
+      <strong>Centang soal</strong> yang ingin dipakai. Gunakan "Pilih Semua" untuk memilih semuanya.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">4</div>
+    <div class="step-content">
+      Klik <strong>"🚀 Buat Game & Generate PIN"</strong>. Sistem akan menghasilkan kode 6 digit.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">5</div>
+    <div class="step-content">
+      <strong>Bagikan kode PIN</strong> ke murid (tulis di papan tulis atau proyektor).
+    </div>
+  </div>
+
+  <h4>Mengontrol Game</h4>
+
+  <table>
+    <tr>
+      <th>Tombol</th>
+      <th>Fungsi</th>
+    </tr>
+    <tr>
+      <td>▶️ Mulai</td>
+      <td>Memulai game. Soal pertama akan ditampilkan ke semua pemain.</td>
+    </tr>
+    <tr>
+      <td>⏭️ Soal Berikutnya</td>
+      <td>Pindah ke soal selanjutnya. Timer dimulai ulang.</td>
+    </tr>
+    <tr>
+      <td>⏸️ Jeda</td>
+      <td>Menjeda game sementara.</td>
+    </tr>
+    <tr>
+      <td>⏹️ Akhiri</td>
+      <td>Mengakhiri game. Skor final disimpan.</td>
+    </tr>
+    <tr>
+      <td>🏆 Podium</td>
+      <td>Membuka halaman podium pemenang.</td>
+    </tr>
+    <tr>
+      <td>📺 Proyektor</td>
+      <td>Membuka tampilan proyektor untuk layar kelas.</td>
+    </tr>
+  </table>
+
+  <div class="info-box warning">
+    <div class="label">⚠️ PENTING</div>
+    Pastikan semua murid sudah bergabung sebelum menekan "Mulai". Lihat jumlah pemain di panel kontrol. Pindah soal secara manual — game tidak otomatis pindah soal.
+  </div>
+
+  <hr>
+
+  <h3>2.5 Koreksi Essay</h3>
+  <p>Meskipun essay sudah dinilai otomatis, admin tetap bisa koreksi manual jika diperlukan.</p>
+
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      Klik menu <strong>"✍️ Koreksi Essay"</strong> di sidebar.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      Pilih <strong>sesi game</strong> dari dropdown.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">3</div>
+    <div class="step-content">
+      Lihat jawaban setiap murid. Ubah nilai jika perlu, lalu klik <strong>"💾 Simpan Nilai"</strong>.
+    </div>
+  </div>
+
+  <div class="info-box tip">
+    <div class="label">💡 INFO</div>
+    Skor total pemain otomatis diperbarui setelah koreksi disimpan. Jawaban yang sudah benar otomatis diberi badge ✅.
+  </div>
+
+  <hr>
+
+  <h3>2.6 Hasil & Export</h3>
+  <p>Menu untuk melihat riwayat game dan mengunduh hasil.</p>
+
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      Klik menu <strong>"📈 Hasil & Export"</strong>.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      Pilih game yang ingin dilihat. Klik <strong>"👁️ Lihat"</strong> untuk membuka podium, <strong>"📄 CSV"</strong> untuk download spreadsheet, atau <strong>"📊 PDF"</strong> untuk laporan PDF.
+    </div>
+  </div>
+
+  <hr>
+
+  <h3>2.7 Tampilan Proyektor</h3>
+  <p>Halaman khusus untuk ditampilkan di layar proyektor kelas.</p>
+
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      Buka <span class="url">projector.html</span> di browser, atau klik <strong>"📺 Proyektor"</strong> di panel kontrol game.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      Masukkan kode game dan klik <strong>"🔗 Hubungkan"</strong>.
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-number">3</div>
+    <div class="step-content">
+      Klik <strong>"⛶ Layar Penuh"</strong> untuk fullscreen. Soal dan ranking akan muncul secara real-time.
+    </div>
+  </div>
+
+  <table>
+    <tr>
+      <th>Fitur Proyektor</th>
+      <th>Keterangan</th>
+    </tr>
+    <tr><td>📺 Soal Besar</td><td>Teks soal besar agar bisa dibaca dari jauh</td></tr>
+    <tr><td>🏆 Live Ranking</td><td>Leaderboard animasi real-time di sisi kanan</td></tr>
+    <tr><td>⏱️ Timer</td><td>Hitungan mundur, merah saat 5 detik terakhir</td></tr>
+    <tr><td>📊 Jumlah Jawaban</td><td>Menunjukkan berapa murid sudah menjawab</td></tr>
+    <tr><td>⛶ Fullscreen</td><td>Mode layar penuh untuk proyektor</td></tr>
+  </table>
+
+  <!-- ============================== -->
+  <!-- BAGIAN 3: ALUR LENGKAP -->
+  <!-- ============================== -->
+  <div class="page-break"></div>
+  <h2>🔄 BAGIAN 3 — Alur Lengkap Game</h2>
+
+  <p>Berikut urutan langkah dari awal hingga akhir:</p>
+
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-content">
+      <strong>Persiapan (Admin)</strong><br>
+      Login ke admin panel → Tambah soal di "Kelola Soal" → Pastikan soal cukup.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-content">
+      <strong>Buat Game (Admin)</strong><br>
+      Kelola Game → Isi judul → Pilih soal → "Buat Game" → Catat PIN 6 digit.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">3</div>
+    <div class="step-content">
+      <strong>Siapkan Proyektor (Admin)</strong><br>
+      Buka projector.html di komputer proyektor → Masukkan PIN → Fullscreen.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">4</div>
+    <div class="step-content">
+      <strong>Murid Bergabung</strong><br>
+      Murid buka play.html → Masukkan PIN → Isi nama → Gabung. Tunggu di lobby.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">5</div>
+    <div class="step-content">
+      <strong>Mulai Game (Admin)</strong><br>
+      Setelah semua murid bergabung → Klik "▶️ Mulai". Soal pertama muncul.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">6</div>
+    <div class="step-content">
+      <strong>Jalankan Soal (Admin)</strong><br>
+      Pantau jawaban → Klik "⏭️ Soal Berikutnya" saat waktunya. Ulangi sampai soal habis.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">7</div>
+    <div class="step-content">
+      <strong>Akhiri Game (Admin)</strong><br>
+      Klik "⏹️ Akhiri" → Klik "🏆 Podium" untuk menampilkan pemenang.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-number">8</div>
+    <div class="step-content">
+      <strong>Download Hasil (Admin)</strong><br>
+      Hasil & Export → Download CSV atau PDF untuk rekap nilai.
+    </div>
+  </div>
+
+  <!-- ============================== -->
+  <!-- BAGIAN 4: FAQ -->
+  <!-- ============================== -->
+  <h2>❓ BAGIAN 4 — FAQ & Troubleshooting</h2>
+
+  <h4>Q: Murid tidak bisa bergabung ke game?</h4>
+  <p><strong>A:</strong> Pastikan kode game benar (6 digit) dan game belum diakhiri. Status game harus "waiting" atau "playing".</p>
+
+  <h4>Q: Halaman loading terus, tidak masuk?</h4>
+  <p><strong>A:</strong> Periksa koneksi internet. Coba hard refresh dengan <code>Ctrl + Shift + R</code>.</p>
+
+  <h4>Q: Murid me-refresh halaman, apakah data hilang?</h4>
+  <p><strong>A:</strong> Tidak. Data tersimpan di server. Setelah refresh, murid otomatis terhubung kembali. Timer tetap berjalan, jawaban yang sudah dikirim tersimpan.</p>
+
+  <h4>Q: Bisa bermain di HP?</h4>
+  <p><strong>A:</strong> Ya! Game responsive, bisa dimainkan di HP, tablet, dan laptop.</p>
+
+  <h4>Q: Bagaimana cara menambah admin baru?</h4>
+  <p><strong>A:</strong> Di halaman login admin, klik "Daftar Baru" dan isi email + password.</p>
+
+  <h4>Q: Bagaimana jika ada error database?</h4>
+  <p><strong>A:</strong> Jalankan file <code>supabase-reset.sql</code> di Supabase SQL Editor untuk reset database.</p>
+
+  <div class="info-box danger">
+    <div class="label">🔑 URL PENTING</div>
+    <table style="margin:8px 0 0;">
+      <tr><th>Halaman</th><th>URL</th></tr>
+      <tr><td>Beranda</td><td class="url">humassmcanca.github.io/game-numerasi-ranking-1/</td></tr>
+      <tr><td>Main</td><td class="url">humassmcanca.github.io/game-numerasi-ranking-1/play.html</td></tr>
+      <tr><td>Admin</td><td class="url">humassmcanca.github.io/game-numerasi-ranking-1/admin.html</td></tr>
+      <tr><td>Proyektor</td><td class="url">humassmcanca.github.io/game-numerasi-ranking-1/projector.html</td></tr>
+    </table>
+  </div>
+
+  <hr>
+  <p style="text-align:center;color:#999;margin-top:40px;font-size:10pt;">
+    © 2026 Game Numerasi Ranking 1 — Ahmad Sahrul Aziz<br>
+    Dokumen ini dibuat otomatis. Simpan sebagai PDF dengan menekan tombol "🖨️ Simpan sebagai PDF" di atas.
+  </p>
+
+</body>
+</html>

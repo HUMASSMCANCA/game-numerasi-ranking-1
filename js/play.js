@@ -207,7 +207,7 @@ const PlayController = {
   },
 
   // --- Show Question ---
-  showQuestion(question, index) {
+  async showQuestion(question, index) {
     if (!question) return;
 
     this.hasAnswered = false;
@@ -258,8 +258,10 @@ const PlayController = {
       if (essayArea) {
         essayArea.style.display = 'block';
         document.getElementById('essay-input').value = '';
+        document.getElementById('essay-input').disabled = false;
         document.getElementById('btn-submit-essay').disabled = false;
         document.getElementById('btn-submit-essay').innerHTML = '📤 Kirim Jawaban';
+        document.getElementById('btn-submit-essay').style.background = '';
       }
     } else {
       // Multiple choice mode
@@ -278,17 +280,93 @@ const PlayController = {
       }
     }
 
-    // Start timer
-    this.startTimer(question.time_limit || 30);
+    // --- CHECK: Already answered this question? ---
+    var alreadyAnswered = await this.checkAlreadyAnswered(question.id);
+    if (alreadyAnswered) {
+      this.hasAnswered = true;
+      this.stopTimer();
+      this.showAlreadyAnsweredUI(question);
+      return;
+    }
 
-    // Record start time
-    GameEngine.questionStartTime = Date.now();
+    // --- TIMER: Calculate remaining time from server timestamp ---
+    var timeLimit = question.time_limit || 30;
+    var remainingTime = timeLimit;
+
+    try {
+      var session = await SupabaseDB.getSessionById(GameEngine.sessionId);
+      if (session && session.question_started_at) {
+        var serverStart = new Date(session.question_started_at).getTime();
+        var elapsed = (Date.now() - serverStart) / 1000;
+        remainingTime = Math.max(0, Math.floor(timeLimit - elapsed));
+      }
+    } catch (e) {
+      // Fallback to full time
+    }
+
+    if (remainingTime <= 0) {
+      // Time already expired
+      this.hasAnswered = true;
+      this.showFeedback('⏰', 'Waktu sudah habis!');
+      this.disableAllInputs(question);
+      return;
+    }
+
+    // Start timer with calculated remaining time
+    this.startTimer(remainingTime, timeLimit);
+
+    // Record start time (for timeTaken calculation)
+    GameEngine.questionStartTime = Date.now() - ((timeLimit - remainingTime) * 1000);
 
     // Animate entrance
     if (questionState) {
       questionState.style.animation = 'none';
       requestAnimationFrame(() => {
         questionState.style.animation = 'fade-in-scale 0.4s ease';
+      });
+    }
+  },
+
+  // --- Check if player already answered this question ---
+  async checkAlreadyAnswered(questionId) {
+    if (!GameEngine.playerId || !GameEngine.sessionId) return false;
+    try {
+      var result = await supabaseClient.from('answers')
+        .select('id')
+        .eq('session_id', GameEngine.sessionId)
+        .eq('player_id', GameEngine.playerId)
+        .eq('question_id', questionId);
+      return result.data && result.data.length > 0;
+    } catch (e) {
+      return false;
+    }
+  },
+
+  // --- Show "Already Answered" UI ---
+  showAlreadyAnsweredUI(question) {
+    if (question.question_type === 'essay') {
+      var essayInput = document.getElementById('essay-input');
+      var btn = document.getElementById('btn-submit-essay');
+      if (essayInput) { essayInput.value = '(Sudah dijawab)'; essayInput.disabled = true; }
+      if (btn) { btn.disabled = true; btn.innerHTML = '✅ Sudah Dijawab'; }
+    } else {
+      document.querySelectorAll('.option-btn').forEach(function(btn) {
+        btn.classList.add('disabled');
+      });
+    }
+    this.showFeedback('✅', 'Kamu sudah menjawab soal ini');
+  },
+
+  // --- Disable all inputs ---
+  disableAllInputs(question) {
+    if (question.question_type === 'essay') {
+      var essayInput = document.getElementById('essay-input');
+      var btn = document.getElementById('btn-submit-essay');
+      if (essayInput) essayInput.disabled = true;
+      if (btn) { btn.disabled = true; btn.innerHTML = '⏰ Waktu Habis'; }
+    } else {
+      document.querySelectorAll('.option-btn').forEach(function(btn) {
+        btn.classList.add('disabled');
       });
     }
   },
@@ -387,9 +465,10 @@ const PlayController = {
   },
 
   // --- Timer ---
-  startTimer(seconds) {
+  startTimer(seconds, totalSeconds) {
     this.stopTimer();
     this.timeRemaining = seconds;
+    var total = totalSeconds || seconds;
 
     const timerText = document.getElementById('timer-text');
     const timerCircle = document.getElementById('timer-circle');
@@ -412,7 +491,7 @@ const PlayController = {
       }
 
       if (timerProgress) {
-        const progress = 1 - (this.timeRemaining / seconds);
+        const progress = 1 - (this.timeRemaining / total);
         timerProgress.style.strokeDashoffset = circumference * progress;
       }
 

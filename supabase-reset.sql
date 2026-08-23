@@ -38,7 +38,8 @@ CREATE TABLE game_sessions (
   created_by TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   started_at TIMESTAMPTZ,
-  finished_at TIMESTAMPTZ
+  finished_at TIMESTAMPTZ,
+  question_started_at TIMESTAMPTZ
 );
 
 -- 3. Tabel Players

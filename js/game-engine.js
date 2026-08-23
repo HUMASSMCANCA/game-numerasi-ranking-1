@@ -198,7 +198,8 @@ const GameEngine = {
       await SupabaseDB.updateSession(this.sessionId, {
         status: 'playing',
         current_question_index: 0,
-        started_at: new Date().toISOString()
+        started_at: new Date().toISOString(),
+        question_started_at: new Date().toISOString()
       });
       this.status = 'playing';
       this.currentQuestionIndex = 0;
@@ -220,7 +221,8 @@ const GameEngine = {
 
     try {
       await SupabaseDB.updateSession(this.sessionId, {
-        current_question_index: nextIndex
+        current_question_index: nextIndex,
+        question_started_at: new Date().toISOString()
       });
       this.currentQuestionIndex = nextIndex;
     } catch (err) {

@@ -312,18 +312,31 @@ const PlayController = {
     // Disable submit button
     var btn = document.getElementById('btn-submit-essay');
     btn.disabled = true;
-    btn.innerHTML = '✅ Terkirim';
+    btn.innerHTML = '⏳ Memeriksa...';
     essayInput.disabled = true;
 
-    // Submit — essay is always "pending" (not auto-graded)
-    await GameEngine.submitAnswer(
+    // Submit — auto-graded against accepted answers
+    var result = await GameEngine.submitAnswer(
       GameEngine.getCurrentQuestion().id,
       answer,
       timeTaken,
       true // isEssay flag
     );
 
-    this.showFeedback('📝', 'Jawaban terkirim! Menunggu koreksi guru.');
+    if (result) {
+      if (result.isCorrect) {
+        btn.innerHTML = '✅ Benar!';
+        btn.style.background = 'var(--accent-green, #00D4AA)';
+        playSound('correct');
+        this.showFeedback('✅', '+' + result.points + ' pts' + (result.streak >= 3 ? ' 🔥 Streak ' + result.streak + '!' : ''));
+      } else {
+        btn.innerHTML = '❌ Salah';
+        btn.style.background = 'var(--accent-red, #FF6B6B)';
+        playSound('wrong');
+        this.showFeedback('❌', 'Jawaban belum tepat');
+      }
+    }
+
     await GameEngine.refreshPlayers();
   },
 

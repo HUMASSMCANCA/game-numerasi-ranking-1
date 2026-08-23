@@ -268,13 +268,36 @@ const GameEngine = {
     var currentPlayer = this.players.find(function(p) { return p.id === GameEngine.playerId; });
 
     if (isEssay) {
-      // Essay: don't auto-grade, just store the answer
+      // Essay: auto-grade by matching against accepted answers (comma-separated in correct_answer)
+      var studentAnswer = answer.toString().trim().toLowerCase();
+      var acceptedAnswers = (question.correct_answer || '').split(',').map(function(a) { return a.trim().toLowerCase(); }).filter(function(a) { return a.length > 0; });
+      var essayCorrect = acceptedAnswers.indexOf(studentAnswer) !== -1;
+      var essayPoints = essayCorrect ? (question.points || 10) : 0;
+
+      // Streak calc for essay
+      var essayStreak = currentPlayer ? (essayCorrect ? currentPlayer.streak + 1 : 0) : (essayCorrect ? 1 : 0);
+      var essayMaxStreak = currentPlayer ? Math.max(currentPlayer.max_streak, essayStreak) : essayStreak;
+
       try {
         await SupabaseDB.submitAnswer(
           this.sessionId, this.playerId, questionId,
-          answer.toString(), false, timeTaken, 0
+          answer.toString(), essayCorrect, timeTaken, essayPoints
         );
-        return { isCorrect: false, points: 0, isEssay: true };
+
+        // Update player stats
+        var essayUpdates = {
+          score: (currentPlayer?.score || 0) + essayPoints,
+          streak: essayStreak,
+          max_streak: essayMaxStreak
+        };
+        if (essayCorrect) {
+          essayUpdates.correct_answers = (currentPlayer?.correct_answers || 0) + 1;
+        } else {
+          essayUpdates.wrong_answers = (currentPlayer?.wrong_answers || 0) + 1;
+        }
+        await SupabaseDB.updatePlayer(this.playerId, essayUpdates);
+
+        return { isCorrect: essayCorrect, points: essayPoints, isEssay: true, streak: essayStreak };
       } catch (err) {
         console.error('Failed to submit essay:', err);
         return null;

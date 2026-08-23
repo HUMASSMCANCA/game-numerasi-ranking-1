@@ -285,9 +285,9 @@ const AdminController = {
       radio.checked = options[i] === correctAnswer;
     });
 
-    // Fill essay hint
-    var essayHint = document.getElementById('q-essay-hint');
-    if (essayHint) essayHint.value = (question?.question_type === 'essay' ? question?.correct_answer : '') || '';
+    // Fill essay accepted answers
+    var essayAnswers = document.getElementById('q-essay-answers');
+    if (essayAnswers) essayAnswers.value = (question?.question_type === 'essay' ? question?.correct_answer : '') || '';
 
     modal.classList.add('active');
   },
@@ -319,9 +319,11 @@ const AdminController = {
     };
 
     if (questionType === 'essay') {
-      // Essay: no options, correct_answer = hint for admin
+      // Essay: store accepted answers (comma-separated)
       questionData.options = null;
-      questionData.correct_answer = document.getElementById('q-essay-hint').value.trim() || '(essay - koreksi manual)';
+      var essayVal = document.getElementById('q-essay-answers').value.trim();
+      if (!essayVal) { showToast('Masukkan jawaban yang diterima!', 'error'); return; }
+      questionData.correct_answer = essayVal;
     } else {
       // Multiple choice
       var options = [];

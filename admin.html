@@ -373,8 +373,41 @@
         <div class="question-form">
           <!-- Question Text -->
           <div class="input-group full-width">
-            <label for="q-text">Teks Soal</label>
+            <div class="ocr-label-row">
+              <label for="q-text">Teks Soal</label>
+              <div class="ocr-buttons">
+                <button type="button" class="btn-ocr" id="btn-paste-screenshot" onclick="OCRHelper.pasteFromClipboard()" title="Tempel screenshot dari clipboard (Ctrl+V)">
+                  📋 Tempel Screenshot
+                </button>
+                <button type="button" class="btn-ocr" id="btn-upload-screenshot" onclick="document.getElementById('ocr-file-input').click()" title="Upload gambar soal">
+                  📷 Upload Gambar
+                </button>
+              </div>
+            </div>
             <textarea id="q-text" class="textarea" placeholder="Contoh: Berapa hasil dari 25 × 16?" rows="3"></textarea>
+            
+            <!-- OCR Image Preview -->
+            <div class="ocr-preview" id="ocr-preview" style="display:none;">
+              <div class="ocr-preview-header">
+                <span class="ocr-preview-title">📸 Preview Screenshot</span>
+                <button type="button" class="btn-ocr-close" onclick="OCRHelper.clearPreview()" title="Hapus gambar">✕</button>
+              </div>
+              <div class="ocr-image-wrapper">
+                <img id="ocr-preview-img" alt="Screenshot preview" />
+              </div>
+              <div class="ocr-status" id="ocr-status" style="display:none;">
+                <div class="ocr-progress-bar">
+                  <div class="ocr-progress-fill" id="ocr-progress-fill"></div>
+                </div>
+                <span class="ocr-status-text" id="ocr-status-text">Memproses...</span>
+              </div>
+              <button type="button" class="btn btn-secondary btn-ocr-extract" id="btn-ocr-extract" onclick="OCRHelper.extractText()">
+                🔍 Ekstrak Teks dari Gambar
+              </button>
+            </div>
+
+            <!-- Hidden file input for image upload -->
+            <input type="file" id="ocr-file-input" accept="image/*" style="display:none;" onchange="OCRHelper.handleFileUpload(event)">
           </div>
 
           <!-- Question Type -->
@@ -477,6 +510,9 @@
     </div>
   </div>
 
+  <!-- Tesseract.js OCR -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
@@ -487,6 +523,7 @@
   <script src="js/auth.js"></script>
   <script src="js/game-engine.js"></script>
   <script src="js/export.js"></script>
+  <script src="js/ocr-helper.js"></script>
   <script src="js/admin.js"></script>
 
   <script>

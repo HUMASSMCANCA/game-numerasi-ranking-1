@@ -289,6 +289,9 @@ const AdminController = {
     var essayAnswers = document.getElementById('q-essay-answers');
     if (essayAnswers) essayAnswers.value = (question?.question_type === 'essay' ? question?.correct_answer : '') || '';
 
+    // Clear OCR preview
+    if (typeof OCRHelper !== 'undefined') OCRHelper.clearPreview();
+
     modal.classList.add('active');
   },
 

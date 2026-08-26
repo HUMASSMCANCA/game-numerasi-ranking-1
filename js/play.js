@@ -20,8 +20,8 @@ const PlayController = {
       question: document.getElementById('question-state')
     };
 
-    // Setup color picker
-    this.setupColorPicker();
+    // Setup avatar picker
+    this.setupAvatarPicker();
 
     // Check for reconnection
     this.checkReconnect();
@@ -34,21 +34,21 @@ const PlayController = {
     GameEngine.onStatusChange = (newStatus, oldStatus) => this.onStatusChange(newStatus, oldStatus);
   },
 
-  // --- Setup Color Picker ---
-  setupColorPicker() {
-    const picker = document.getElementById('color-picker');
+  // --- Setup Avatar Picker ---
+  setupAvatarPicker() {
+    const picker = document.getElementById('avatar-picker');
     if (!picker) return;
 
-    AVATAR_COLORS.forEach((color, i) => {
-      const swatch = document.createElement('div');
-      swatch.className = 'color-swatch' + (i === 0 ? ' selected' : '');
-      swatch.style.backgroundColor = color;
-      swatch.dataset.color = color;
-      swatch.addEventListener('click', () => {
-        picker.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
-        swatch.classList.add('selected');
+    AVATAR_EMOJIS.forEach((emoji, i) => {
+      const option = document.createElement('div');
+      option.className = 'avatar-option' + (i === 0 ? ' selected' : '');
+      option.textContent = emoji;
+      option.dataset.avatar = emoji;
+      option.addEventListener('click', () => {
+        picker.querySelectorAll('.avatar-option').forEach(s => s.classList.remove('selected'));
+        option.classList.add('selected');
       });
-      picker.appendChild(swatch);
+      picker.appendChild(option);
     });
   },
 
@@ -101,8 +101,8 @@ const PlayController = {
 
     const code = codeInput.value.trim();
     const name = nameInput.value.trim();
-    const colorSwatch = document.querySelector('.color-swatch.selected');
-    const color = colorSwatch ? colorSwatch.dataset.color : getRandomColor();
+    const avatarOption = document.querySelector('.avatar-option.selected');
+    const avatar = avatarOption ? avatarOption.dataset.avatar : getRandomAvatar();
 
     if (!code || code.length < 6) {
       showToast('Masukkan kode game 6 digit!', 'error');
@@ -120,7 +120,7 @@ const PlayController = {
     joinBtn.disabled = true;
     joinBtn.innerHTML = '<span class="spinner spinner-sm"></span> Bergabung...';
 
-    const result = await GameEngine.joinGame(code, name, color);
+    const result = await GameEngine.joinGame(code, name, avatar);
 
     if (result) {
       this.showSection('lobby');
@@ -155,8 +155,8 @@ const PlayController = {
     if (grid) {
       grid.innerHTML = players.map((p, i) => `
         <div class="player-card" style="animation-delay:${i * 0.05}s">
-          <div class="player-avatar" style="background:${p.avatar_color || getRandomColor()}">
-            ${getInitial(p.name)}
+          <div class="player-avatar" style="background:linear-gradient(135deg, rgba(108,99,255,0.15), rgba(0,212,170,0.15)); font-size: 2.5rem;">
+            ${p.avatar_color || getRandomAvatar()}
           </div>
           <div class="player-name">${escapeHtml(p.name)}</div>
         </div>
@@ -184,8 +184,8 @@ const PlayController = {
       return `
         <div class="ranking-item ${rankClass} ${isMe}">
           <div class="ranking-position">${i + 1}</div>
-          <div class="ranking-avatar-sm" style="background:${p.avatar_color || '#6C63FF'}">
-            ${getInitial(p.name)}
+          <div class="ranking-avatar-sm" style="background:linear-gradient(135deg, rgba(108,99,255,0.15), rgba(0,212,170,0.15)); font-size: 1.2rem;">
+            ${p.avatar_color || getRandomAvatar()}
           </div>
           <div class="ranking-info">
             <div class="ranking-name">${escapeHtml(p.name)}${isMe ? ' (Kamu)' : ''}</div>

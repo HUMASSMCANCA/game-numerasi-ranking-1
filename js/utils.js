@@ -42,6 +42,18 @@ function getRandomColor() {
   return AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
 }
 
+// --- Avatar Emojis (Cute Characters) ---
+const AVATAR_EMOJIS = [
+  '😊', '😎', '🤗', '😇', '🥳', '🤩',
+  '🐻', '🐼', '🐨', '🐯', '🦁', '🐸',
+  '🦊', '🐰', '🐱', '🐶', '🐵', '🐹',
+  '🦄', '🐷', '🐮', '🐔', '🦉', '🐧'
+];
+
+function getRandomAvatar() {
+  return AVATAR_EMOJIS[Math.floor(Math.random() * AVATAR_EMOJIS.length)];
+}
+
 // --- Get Initial from Name ---
 function getInitial(name) {
   if (!name) return '?';

@@ -563,7 +563,7 @@ const AdminController = {
       container.innerHTML = sorted.map((p, i) => `
         <div class="monitor-player">
           <span style="width:24px;font-weight:700;color:${i < 3 ? 'var(--accent-gold)' : 'var(--text-muted)'}">${i + 1}</span>
-          <div class="ranking-avatar-sm" style="background:${p.avatar_color || '#6C63FF'}">${getInitial(p.name)}</div>
+          <div class="ranking-avatar-sm" style="background:linear-gradient(135deg, rgba(108,99,255,0.15), rgba(0,212,170,0.15)); font-size: 1.2rem;">${p.avatar_color || getRandomAvatar()}</div>
           <span style="flex:1;font-weight:500;">${escapeHtml(p.name)}</span>
           <span style="font-family:var(--font-mono);font-weight:700;color:var(--primary-light);">${p.score}</span>
         </div>

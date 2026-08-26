@@ -242,10 +242,16 @@ const PlayController = {
       categoryEl.textContent = categoryLabels[question.category] || question.category;
     }
 
-    // Update question text
-    const questionText = document.getElementById('question-text');
-    if (questionText) {
-      questionText.innerHTML = escapeHtml(question.question_text);
+    // Update question text and image using QuestionRenderer
+    if (typeof QuestionRenderer !== 'undefined') {
+      QuestionRenderer.updateQuestionImage(question, 'question-image');
+      QuestionRenderer.updateQuestionText(question, 'question-text');
+    } else {
+      // Fallback if QuestionRenderer not loaded
+      const questionText = document.getElementById('question-text');
+      if (questionText) {
+        questionText.innerHTML = escapeHtml(question.question_text);
+      }
     }
 
     // Toggle essay vs multiple choice

@@ -241,5 +241,13 @@
   <script src="js/game-engine.js"></script>
   <script src="js/play.js"></script>
   <script src="js/play-exit.js"></script>
+  <script>
+    // Initialize PlayController when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof PlayController !== 'undefined') {
+        PlayController.init();
+      }
+    });
+  </script>
 </body>
 </html>

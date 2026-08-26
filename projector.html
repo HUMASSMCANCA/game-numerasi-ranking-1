@@ -720,50 +720,99 @@
         }
       },
 
-      // Tension sound - dramatic question reveal
+      // Tension sound - dramatic question reveal (EXTENDED VERSION - 3.5 seconds)
       playQuestionReveal() {
         this.init();
         var ctx = this.audioContext;
         var now = ctx.currentTime;
 
-        // Low dramatic rumble
+        // LAYER 1: Deep rumbling bass (suspense foundation)
         var osc1 = ctx.createOscillator();
         var gain1 = ctx.createGain();
         osc1.connect(gain1);
         gain1.connect(ctx.destination);
-        osc1.frequency.setValueAtTime(80, now);
-        osc1.frequency.exponentialRampToValueAtTime(120, now + 0.3);
-        gain1.gain.setValueAtTime(0.3, now);
-        gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(55, now); // Deep A note
+        osc1.frequency.exponentialRampToValueAtTime(65, now + 1.5);
+        osc1.frequency.exponentialRampToValueAtTime(110, now + 3.0);
+        gain1.gain.setValueAtTime(0, now);
+        gain1.gain.linearRampToValueAtTime(0.25, now + 0.3);
+        gain1.gain.setValueAtTime(0.25, now + 2.5);
+        gain1.gain.exponentialRampToValueAtTime(0.01, now + 3.5);
         osc1.start(now);
-        osc1.stop(now + 0.8);
+        osc1.stop(now + 3.5);
 
-        // Rising tension tone
+        // LAYER 2: Rising tension sweep (dramatic build-up)
         var osc2 = ctx.createOscillator();
         var gain2 = ctx.createGain();
         osc2.connect(gain2);
         gain2.connect(ctx.destination);
         osc2.type = 'triangle';
-        osc2.frequency.setValueAtTime(200, now + 0.1);
-        osc2.frequency.exponentialRampToValueAtTime(600, now + 0.6);
-        gain2.gain.setValueAtTime(0, now + 0.1);
-        gain2.gain.linearRampToValueAtTime(0.15, now + 0.3);
-        gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
-        osc2.start(now + 0.1);
-        osc2.stop(now + 0.7);
+        osc2.frequency.setValueAtTime(150, now + 0.3);
+        osc2.frequency.exponentialRampToValueAtTime(400, now + 1.5);
+        osc2.frequency.exponentialRampToValueAtTime(800, now + 3.0);
+        gain2.gain.setValueAtTime(0, now + 0.3);
+        gain2.gain.linearRampToValueAtTime(0.18, now + 1.0);
+        gain2.gain.setValueAtTime(0.18, now + 2.5);
+        gain2.gain.exponentialRampToValueAtTime(0.01, now + 3.3);
+        osc2.start(now + 0.3);
+        osc2.stop(now + 3.3);
 
-        // High suspense ping
-        var osc3 = ctx.createOscillator();
-        var gain3 = ctx.createGain();
-        osc3.connect(gain3);
-        gain3.connect(ctx.destination);
-        osc3.type = 'sine';
-        osc3.frequency.setValueAtTime(1200, now + 0.4);
-        osc3.frequency.exponentialRampToValueAtTime(800, now + 1.0);
-        gain3.gain.setValueAtTime(0.2, now + 0.4);
-        gain3.gain.exponentialRampToValueAtTime(0.01, now + 1.0);
-        osc3.start(now + 0.4);
-        osc3.stop(now + 1.0);
+        // LAYER 3: Pulsating mid-frequency (heartbeat effect)
+        for (var i = 0; i < 6; i++) {
+          var osc3 = ctx.createOscillator();
+          var gain3 = ctx.createGain();
+          osc3.connect(gain3);
+          gain3.connect(ctx.destination);
+          osc3.type = 'sine';
+          osc3.frequency.setValueAtTime(220 + (i * 30), now + 0.5 + (i * 0.45));
+          gain3.gain.setValueAtTime(0.12, now + 0.5 + (i * 0.45));
+          gain3.gain.exponentialRampToValueAtTime(0.01, now + 0.7 + (i * 0.45));
+          osc3.start(now + 0.5 + (i * 0.45));
+          osc3.stop(now + 0.7 + (i * 0.45));
+        }
+
+        // LAYER 4: High tension riser (climax build)
+        var osc4 = ctx.createOscillator();
+        var gain4 = ctx.createGain();
+        osc4.connect(gain4);
+        gain4.connect(ctx.destination);
+        osc4.type = 'sine';
+        osc4.frequency.setValueAtTime(800, now + 1.5);
+        osc4.frequency.exponentialRampToValueAtTime(2000, now + 3.0);
+        gain4.gain.setValueAtTime(0, now + 1.5);
+        gain4.gain.linearRampToValueAtTime(0.15, now + 2.0);
+        gain4.gain.exponentialRampToValueAtTime(0.01, now + 3.2);
+        osc4.start(now + 1.5);
+        osc4.stop(now + 3.2);
+
+        // LAYER 5: Metallic shimmer (eerie atmosphere)
+        var osc5 = ctx.createOscillator();
+        var gain5 = ctx.createGain();
+        osc5.connect(gain5);
+        gain5.connect(ctx.destination);
+        osc5.type = 'square';
+        osc5.frequency.setValueAtTime(1800, now + 2.0);
+        osc5.frequency.exponentialRampToValueAtTime(2400, now + 2.5);
+        osc5.frequency.exponentialRampToValueAtTime(1600, now + 3.3);
+        gain5.gain.setValueAtTime(0, now + 2.0);
+        gain5.gain.linearRampToValueAtTime(0.08, now + 2.2);
+        gain5.gain.exponentialRampToValueAtTime(0.01, now + 3.3);
+        osc5.start(now + 2.0);
+        osc5.stop(now + 3.3);
+
+        // LAYER 6: Final impact hit (dramatic conclusion)
+        var osc6 = ctx.createOscillator();
+        var gain6 = ctx.createGain();
+        osc6.connect(gain6);
+        gain6.connect(ctx.destination);
+        osc6.type = 'sawtooth';
+        osc6.frequency.setValueAtTime(110, now + 3.0);
+        osc6.frequency.exponentialRampToValueAtTime(55, now + 3.5);
+        gain6.gain.setValueAtTime(0.3, now + 3.0);
+        gain6.gain.exponentialRampToValueAtTime(0.01, now + 3.5);
+        osc6.start(now + 3.0);
+        osc6.stop(now + 3.5);
       },
 
       // Countdown tick sound (for last 5 seconds)

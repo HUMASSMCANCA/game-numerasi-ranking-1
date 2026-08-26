@@ -286,8 +286,15 @@
   <script>
     // Initialize PlayController when DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOM loaded, initializing PlayController...');
+      console.log('PlayController exists:', typeof PlayController !== 'undefined');
+      console.log('joinGame method exists:', typeof PlayController?.joinGame === 'function');
+      
       if (typeof PlayController !== 'undefined') {
         PlayController.init();
+        console.log('PlayController initialized successfully');
+      } else {
+        console.error('PlayController not found!');
       }
     });
   </script>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔊 Test Sound Effects Projector</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #6C63FF, #00D4AA);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 40px;
+      font-size: 0.95rem;
+    }
+    
+    .sound-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+    
+    .sound-card:hover {
+      background: rgba(255,255,255,0.06);
+      transform: translateY(-2px);
+    }
+    
+    .sound-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 8px;
+      color: #6C63FF;
+    }
+    
+    .sound-card p {
+      color: #aaa;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    
+    .specs {
+      background: rgba(0,0,0,0.3);
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: #00D4AA;
+    }
+    
+    .specs div {
+      margin: 4px 0;
+    }
+    
+    button {
+      background: linear-gradient(135deg, #6C63FF, #8B83FF);
+      border: none;
+      color: #fff;
+      padding: 14px 32px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(108,99,255,0.4);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .demo-section {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .demo-section h2 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #FFD93D;
+    }
+    
+    .countdown-demo {
+      background: rgba(255,107,107,0.1);
+      border: 2px solid rgba(255,107,107,0.3);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+    
+    .timer {
+      font-size: 4rem;
+      font-weight: 900;
+      color: #00D4AA;
+      font-variant-numeric: tabular-nums;
+      margin: 20px 0;
+    }
+    
+    .timer.warning {
+      color: #FF6B6B;
+      animation: pulse 0.5s ease infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    
+    .btn-demo {
+      background: linear-gradient(135deg, #FFD93D, #FFA500);
+      color: #000;
+      margin-top: 16px;
+    }
+    
+    .btn-stop {
+      background: linear-gradient(135deg, #FF6B6B, #FF4757);
+      color: #fff;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔊 Test Sound Effects</h1>
+    <p class="subtitle">Preview suara yang digunakan di Proyektor</p>
+    
+    <!-- Sound 1: Question Reveal -->
+    <div class="sound-card">
+      <h3>1️⃣ Question Reveal (Dramatic)</h3>
+      <p>Suara menegangkan saat soal baru ditampilkan. Menggunakan 3 layer oscillator untuk efek dramatis.</p>
+      <div class="specs">
+        <div>🎵 Layer 1: Low Rumble (80-120 Hz, 0.8s)</div>
+        <div>🎵 Layer 2: Rising Tension (200-600 Hz, 0.6s)</div>
+        <div>🎵 Layer 3: Suspense Ping (1200-800 Hz, 0.6s)</div>
+        <div>⏱️ Total Duration: ~1 detik</div>
+      </div>
+      <button onclick="SoundFX.playQuestionReveal()">▶️ Putar Suara</button>
+    </div>
+    
+    <!-- Sound 2: Countdown Tick -->
+    <div class="sound-card">
+      <h3>2️⃣ Countdown Tick (10-4 detik)</h3>
+      <p>Suara "tick" reguler setiap detik untuk countdown 10-4 detik tersisa.</p>
+      <div class="specs">
+        <div>🎵 Frequency: 800 Hz</div>
+        <div>🎵 Wave: Sine</div>
+        <div>🎵 Volume: 0.15</div>
+        <div>⏱️ Duration: 0.1s</div>
+      </div>
+      <button onclick="SoundFX.playTick()">▶️ Putar Suara</button>
+    </div>
+    
+    <!-- Sound 3: Urgent Tick -->
+    <div class="sound-card">
+      <h3>3️⃣ Urgent Tick (3-1 detik)</h3>
+      <p>Suara "tick" yang lebih tajam dan mendesak untuk 3 detik terakhir.</p>
+      <div class="specs">
+        <div>🎵 Frequency: 1200 Hz</div>
+        <div>🎵 Wave: Square</div>
+        <div>🎵 Volume: 0.2</div>
+        <div>⏱️ Duration: 0.15s</div>
+      </div>
+      <button onclick="SoundFX.playUrgentTick()">▶️ Putar Suara</button>
+    </div>
+    
+    <!-- Sound 4: Times Up -->
+    <div class="sound-card">
+      <h3>4️⃣ Times Up Alarm</h3>
+      <p>Alarm 3x beep beruntun saat waktu habis.</p>
+      <div class="specs">
+        <div>🎵 Frequency: 1000 Hz</div>
+        <div>🎵 Wave: Sine</div>
+        <div>🎵 Pattern: 3 beeps @ 0.2s interval</div>
+        <div>⏱️ Total Duration: 0.6s</div>
+      </div>
+      <button onclick="SoundFX.playTimesUp()">▶️ Putar Suara</button>
+    </div>
+    
+    <!-- Demo Section -->
+    <div class="demo-section">
+      <h2>🎮 Demo Countdown Lengkap</h2>
+      <div class="countdown-demo">
+        <p style="color:#aaa;margin-bottom:10px;">Simulasi countdown dari 15 detik dengan sound effects</p>
+        <div class="timer" id="demoTimer">15</div>
+        <button class="btn-demo" onclick="startDemo()">🎬 Mulai Demo</button>
+        <button class="btn-stop" onclick="stopDemo()">⏹️ Stop Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // === SOUND EFFECTS ENGINE (sama seperti di projector.html) ===
+    var SoundFX = {
+      audioContext: null,
+
+      init() {
+        if (!this.audioContext) {
+          this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      },
+
+      // Tension sound - dramatic question reveal
+      playQuestionReveal() {
+        this.init();
+        var ctx = this.audioContext;
+        var now = ctx.currentTime;
+
+        // Low dramatic rumble
+        var osc1 = ctx.createOscillator();
+        var gain1 = ctx.createGain();
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.frequency.setValueAtTime(80, now);
+        osc1.frequency.exponentialRampToValueAtTime(120, now + 0.3);
+        gain1.gain.setValueAtTime(0.3, now);
+        gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+        osc1.start(now);
+        osc1.stop(now + 0.8);
+
+        // Rising tension tone
+        var osc2 = ctx.createOscillator();
+        var gain2 = ctx.createGain();
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(200, now + 0.1);
+        osc2.frequency.exponentialRampToValueAtTime(600, now + 0.6);
+        gain2.gain.setValueAtTime(0, now + 0.1);
+        gain2.gain.linearRampToValueAtTime(0.15, now + 0.3);
+        gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
+        osc2.start(now + 0.1);
+        osc2.stop(now + 0.7);
+
+        // High suspense ping
+        var osc3 = ctx.createOscillator();
+        var gain3 = ctx.createGain();
+        osc3.connect(gain3);
+        gain3.connect(ctx.destination);
+        osc3.type = 'sine';
+        osc3.frequency.setValueAtTime(1200, now + 0.4);
+        osc3.frequency.exponentialRampToValueAtTime(800, now + 1.0);
+        gain3.gain.setValueAtTime(0.2, now + 0.4);
+        gain3.gain.exponentialRampToValueAtTime(0.01, now + 1.0);
+        osc3.start(now + 0.4);
+        osc3.stop(now + 1.0);
+      },
+
+      // Countdown tick sound (for last 10 seconds)
+      playTick() {
+        this.init();
+        var ctx = this.audioContext;
+        var now = ctx.currentTime;
+
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, now);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        
+        osc.start(now);
+        osc.stop(now + 0.1);
+      },
+
+      // Final countdown urgent tick
+      playUrgentTick() {
+        this.init();
+        var ctx = this.audioContext;
+        var now = ctx.currentTime;
+
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(1200, now);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        
+        osc.start(now);
+        osc.stop(now + 0.15);
+      },
+
+      // Time's up alarm
+      playTimesUp() {
+        this.init();
+        var ctx = this.audioContext;
+        var now = ctx.currentTime;
+
+        // Alarm beep pattern
+        for (var i = 0; i < 3; i++) {
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          
+          osc.frequency.setValueAtTime(1000, now + i * 0.2);
+          gain.gain.setValueAtTime(0.25, now + i * 0.2);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.2 + 0.15);
+          
+          osc.start(now + i * 0.2);
+          osc.stop(now + i * 0.2 + 0.15);
+        }
+      }
+    };
+
+    // === COUNTDOWN DEMO ===
+    var demoInterval = null;
+    var demoTime = 15;
+
+    function startDemo() {
+      stopDemo();
+      demoTime = 15;
+      var timerEl = document.getElementById('demoTimer');
+      timerEl.textContent = demoTime;
+      timerEl.classList.remove('warning');
+      
+      // Play reveal sound at start
+      SoundFX.playQuestionReveal();
+      
+      demoInterval = setInterval(function() {
+        demoTime--;
+        timerEl.textContent = demoTime;
+        
+        if (demoTime <= 10 && demoTime > 3) {
+          SoundFX.playTick();
+          timerEl.classList.add('warning');
+        } else if (demoTime <= 3 && demoTime > 0) {
+          SoundFX.playUrgentTick();
+        } else if (demoTime === 0) {
+          SoundFX.playTimesUp();
+          stopDemo();
+        }
+      }, 1000);
+    }
+
+    function stopDemo() {
+      if (demoInterval) {
+        clearInterval(demoInterval);
+        demoInterval = null;
+      }
+      document.getElementById('demoTimer').classList.remove('warning');
+    }
+  </script>
+</body>
+</html>

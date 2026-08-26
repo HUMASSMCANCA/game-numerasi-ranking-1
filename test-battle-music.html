@@ -196,20 +196,26 @@
 
       // Generate funky/jazzy loop with Web Audio API
       createFunkyLoop() {
+        console.log('=== createFunkyLoop() called ===');
+        
         if (!this.audioContext) {
-          this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          console.error('❌ No audio context!');
+          return;
         }
 
         const ctx = this.audioContext;
         const loopDuration = 8; // 8 seconds loop
         
+        console.log('Creating gain node...');
         // Create master gain node for volume control
         if (!this.gainNode) {
           this.gainNode = ctx.createGain();
           this.gainNode.connect(ctx.destination);
           this.gainNode.gain.value = this.currentVolume;
+          console.log('✅ Gain node created, volume:', this.currentVolume);
         }
         
+        console.log('Defining bass notes and hi-hat beats...');
         // Bass line (funky bass)
         const bassNotes = [
           { freq: 65.41, time: 0, duration: 0.5 },    // C2
@@ -225,13 +231,18 @@
         // Hi-hat rhythm
         const hihatBeats = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5];
 
+        console.log('Starting playLoop function...');
         const playLoop = () => {
-          if (!this.isPlaying) return;
+          if (!this.isPlaying) {
+            console.log('⚠️ Not playing, loop stopped');
+            return;
+          }
 
           const startTime = ctx.currentTime;
+          console.log('Playing loop at time:', startTime);
 
           // Bass line
-          bassNotes.forEach(note => {
+          bassNotes.forEach((note, index) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             const filter = ctx.createBiquadFilter();
@@ -253,10 +264,12 @@
 
             osc.start(startTime + note.time);
             osc.stop(startTime + note.time + note.duration);
+            
+            if (index === 0) console.log('✅ First bass note scheduled');
           });
 
           // Hi-hat (cymbal-like)
-          hihatBeats.forEach(beat => {
+          hihatBeats.forEach((beat, index) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             const filter = ctx.createBiquadFilter();
@@ -277,9 +290,12 @@
 
             osc.start(startTime + beat);
             osc.stop(startTime + beat + 0.1);
+            
+            if (index === 0) console.log('✅ First hi-hat beat scheduled');
           });
 
           // Schedule next loop
+          console.log('Scheduling next loop in', loopDuration, 'seconds');
           setTimeout(() => playLoop(), loopDuration * 1000);
         };
 
@@ -288,11 +304,36 @@
 
       // Start background music
       play() {
-        if (this.isPlaying) return;
-        
-        this.isPlaying = true;
-        this.createFunkyLoop();
-        console.log('🎵 Background music started');
+        try {
+          console.log('=== BackgroundMusic.play() called ===');
+          
+          if (this.isPlaying) {
+            console.log('⚠️ Already playing, ignoring');
+            return;
+          }
+          
+          console.log('Initializing audio context...');
+          if (!this.audioContext) {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            console.log('✅ AudioContext created:', this.audioContext.state);
+          }
+          
+          // Resume audio context if suspended (browser autoplay policy)
+          if (this.audioContext.state === 'suspended') {
+            console.log('⚠️ AudioContext suspended, resuming...');
+            this.audioContext.resume().then(() => {
+              console.log('✅ AudioContext resumed:', this.audioContext.state);
+            });
+          }
+          
+          this.isPlaying = true;
+          console.log('Starting funky loop...');
+          this.createFunkyLoop();
+          console.log('✅ Background music started');
+        } catch (error) {
+          console.error('❌ Error in play():', error);
+          throw error;
+        }
       },
 
       // Stop background music
@@ -312,11 +353,48 @@
 
     // UI Controls
     function playMusic() {
-      BackgroundMusic.play();
-      updateStatus('🎵 Music is playing... (Looping)', true);
-      document.getElementById('btn-play').style.display = 'none';
-      document.getElementById('btn-pause').style.display = 'block';
-      document.getElementById('btn-resume').style.display = 'none';
+      try {
+        console.log('=== PLAY MUSIC CLICKED ===');
+        console.log('AudioContext support:', typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined');
+        
+        BackgroundMusic.play();
+        
+        console.log('Music started, isPlaying:', BackgroundMusic.isPlaying);
+        console.log('AudioContext state:', BackgroundMusic.audioContext?.state);
+        
+        updateStatus('🎵 Music is playing... (Looping)', true);
+        document.getElementById('btn-play').style.display = 'none';
+        document.getElementById('btn-pause').style.display = 'block';
+        document.getElementById('btn-resume').style.display = 'none';
+        
+        // Test simple beep to verify audio is working
+        setTimeout(() => testBeep(), 500);
+      } catch (error) {
+        console.error('❌ Error playing music:', error);
+        updateStatus('❌ Error: ' + error.message, false);
+      }
+    }
+
+    function testBeep() {
+      try {
+        console.log('=== TESTING SIMPLE BEEP ===');
+        const ctx = BackgroundMusic.audioContext;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.frequency.value = 440; // A4 note
+        gain.gain.value = 0.1;
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.2);
+        
+        console.log('✅ Test beep sent');
+      } catch (error) {
+        console.error('❌ Test beep failed:', error);
+      }
     }
 
     function pauseMusic() {

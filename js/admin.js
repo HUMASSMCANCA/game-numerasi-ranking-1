@@ -334,12 +334,16 @@ const AdminController = {
       time_limit: timeLimit
     };
 
-    // Get question image if uploaded
-    if (typeof window.getQuestionImageData === 'function') {
-      const imageData = window.getQuestionImageData();
-      if (imageData) {
-        questionData.question_image = imageData; // Store base64 image
+    // Get question image if uploaded (with error handling)
+    try {
+      if (typeof window.getQuestionImageData === 'function') {
+        const imageData = window.getQuestionImageData();
+        if (imageData) {
+          questionData.question_image = imageData; // Store base64 image
+        }
       }
+    } catch (imgErr) {
+      console.warn('Question image not included:', imgErr);
     }
 
     if (questionType === 'essay') {
@@ -384,7 +388,13 @@ const AdminController = {
       this.loadQuestions();
       this.loadDashboardStats();
     } catch (err) {
-      showToast('Error: ' + err.message, 'error');
+      // Check if error is about missing column
+      if (err.message && err.message.includes('question_image')) {
+        showToast('⚠️ Database perlu update! Jalankan migration SQL untuk menambahkan kolom question_image. Lihat file MIGRATION-GUIDE.md', 'error');
+      } else {
+        showToast('Error: ' + err.message, 'error');
+      }
+      console.error('Save question error:', err);
     }
   },
 

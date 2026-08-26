@@ -455,6 +455,16 @@
       to { transform: translateX(0); opacity: 1; }
     }
 
+    @keyframes slideIn {
+      from { transform: translateX(100px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100px); opacity: 0; }
+    }
+
     .proj-rank-item { animation: slide-in 0.4s ease backwards; }
 
     /* Fullscreen button */
@@ -802,6 +812,30 @@
   <script src="js/question-renderer.js"></script>
 
   <script>
+    // === Fallback showToast if utils.js not loaded ===
+    if (typeof showToast === 'undefined') {
+      function showToast(message, type = 'info', duration = 3000) {
+        let container = document.querySelector('.toast-container');
+        if (!container) {
+          container = document.createElement('div');
+          container.className = 'toast-container';
+          container.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:12px;';
+          document.body.appendChild(container);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+        toast.style.cssText = 'background:' + (type === 'success' ? '#00D4AA' : type === 'error' ? '#FF6B6B' : '#6C63FF') + ';color:#fff;padding:16px 24px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:flex;align-items:center;gap:12px;font-weight:600;animation:slideIn 0.3s ease;';
+        toast.innerHTML = '<span>' + (type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️') + '</span><span>' + message + '</span>';
+        container.appendChild(toast);
+
+        setTimeout(function() {
+          toast.style.animation = 'slideOut 0.3s ease';
+          setTimeout(function() { toast.remove(); }, 300);
+        }, duration);
+      }
+    }
+
     // === SOUND EFFECTS ENGINE ===
     var SoundFX = {
       audioContext: null,

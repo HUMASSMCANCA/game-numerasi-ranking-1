@@ -379,8 +379,8 @@
                 <button type="button" class="btn-ocr" id="btn-paste-screenshot" onclick="OCRHelper.pasteFromClipboard()" title="Tempel screenshot dari clipboard (Ctrl+V)">
                   📋 Tempel Screenshot
                 </button>
-                <button type="button" class="btn-ocr" id="btn-upload-screenshot" onclick="document.getElementById('ocr-file-input').click()" title="Upload gambar soal">
-                  📷 Upload Gambar
+                <button type="button" class="btn-ocr" id="btn-upload-screenshot" onclick="document.getElementById('ocr-file-input').click()" title="Upload gambar untuk di-ekstrak jadi teks">
+                  📷 Upload & Ekstrak Teks
                 </button>
               </div>
             </div>
@@ -433,13 +433,13 @@
               </button>
             </div>
             <p style="font-size:0.8rem;color:var(--text-muted);margin-top:8px;">
-              Upload diagram, grafik, atau gambar soal. Gambar akan ditampilkan di atas/bawah teks soal.
+              Upload diagram, grafik, atau gambar soal. Gambar akan ditampilkan sebagai bagian dari soal (tidak di-ekstrak jadi teks).
             </p>
             
             <!-- Image Preview -->
             <div id="question-image-preview" style="display:none;margin-top:12px;padding:16px;background:var(--bg-surface);border-radius:var(--radius-md);border:1px solid rgba(0,212,170,0.2);">
-              <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px;">Preview Gambar Soal:</div>
-              <img id="question-image-preview-img" style="max-width:100%;height:auto;border-radius:8px;display:block;" alt="Question image preview" />
+              <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px;">📸 Preview Gambar Soal:</div>
+              <img id="question-image-preview-img" style="max-width:100%;height:auto;border-radius:8px;display:block;border:2px solid rgba(0,212,170,0.2);" alt="Question image preview" />
               <div style="margin-top:8px;font-size:0.75rem;color:var(--text-muted);" id="question-image-info"></div>
             </div>
 

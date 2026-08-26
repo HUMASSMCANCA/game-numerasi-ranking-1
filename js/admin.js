@@ -289,8 +289,16 @@ const AdminController = {
     var essayAnswers = document.getElementById('q-essay-answers');
     if (essayAnswers) essayAnswers.value = (question?.question_type === 'essay' ? question?.correct_answer : '') || '';
 
+    // Load question image if exists
+    if (typeof window.setQuestionImageData === 'function') {
+      window.setQuestionImageData(question?.question_image || null);
+    }
+
     // Clear OCR preview
     if (typeof OCRHelper !== 'undefined') OCRHelper.clearPreview();
+
+    // Trigger equation preview
+    if (typeof debouncePreview === 'function') debouncePreview();
 
     modal.classList.add('active');
   },
@@ -298,6 +306,11 @@ const AdminController = {
   closeQuestionModal() {
     document.getElementById('question-modal').classList.remove('active');
     this.editingQuestionId = null;
+    
+    // Clear question image
+    if (typeof window.setQuestionImageData === 'function') {
+      window.setQuestionImageData(null);
+    }
   },
 
   // --- Save Question (Supabase) ---
@@ -320,6 +333,14 @@ const AdminController = {
       points: points,
       time_limit: timeLimit
     };
+
+    // Get question image if uploaded
+    if (typeof window.getQuestionImageData === 'function') {
+      const imageData = window.getQuestionImageData();
+      if (imageData) {
+        questionData.question_image = imageData; // Store base64 image
+      }
+    }
 
     if (questionType === 'essay') {
       // Essay: store accepted answers (comma-separated)

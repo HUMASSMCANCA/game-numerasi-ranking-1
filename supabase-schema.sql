@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS admins (
 CREATE TABLE IF NOT EXISTS questions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   question_text TEXT NOT NULL,
+  question_image TEXT,
   question_type TEXT NOT NULL DEFAULT 'multiple_choice',
   category TEXT NOT NULL DEFAULT 'campuran',
   difficulty INTEGER DEFAULT 1 CHECK (difficulty >= 1 AND difficulty <= 5),

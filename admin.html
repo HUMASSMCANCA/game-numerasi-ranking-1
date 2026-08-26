@@ -421,6 +421,32 @@
             <input type="file" id="ocr-file-input" accept="image/*" style="display:none;" onchange="OCRHelper.handleFileUpload(event)">
           </div>
 
+          <!-- Question Image Upload -->
+          <div class="input-group full-width">
+            <label for="q-image-upload">🖼️ Gambar Soal (Opsional)</label>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('question-image-input').click()">
+                📷 Upload Gambar Soal
+              </button>
+              <button type="button" class="btn btn-ghost" id="btn-clear-question-image" onclick="clearQuestionImage()" style="display:none;">
+                ✕ Hapus Gambar
+              </button>
+            </div>
+            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:8px;">
+              Upload diagram, grafik, atau gambar soal. Gambar akan ditampilkan di atas/bawah teks soal.
+            </p>
+            
+            <!-- Image Preview -->
+            <div id="question-image-preview" style="display:none;margin-top:12px;padding:16px;background:var(--bg-surface);border-radius:var(--radius-md);border:1px solid rgba(0,212,170,0.2);">
+              <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px;">Preview Gambar Soal:</div>
+              <img id="question-image-preview-img" style="max-width:100%;height:auto;border-radius:8px;display:block;" alt="Question image preview" />
+              <div style="margin-top:8px;font-size:0.75rem;color:var(--text-muted);" id="question-image-info"></div>
+            </div>
+
+            <!-- Hidden file input -->
+            <input type="file" id="question-image-input" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" style="display:none;" onchange="handleQuestionImageUpload(event)">
+          </div>
+
           <!-- Question Type -->
           <div class="input-group">
             <label for="q-type">Tipe Soal</label>
@@ -588,6 +614,73 @@
       clearTimeout(previewTimeout);
       previewTimeout = setTimeout(previewEquation, 300);
     }
+
+    // === QUESTION IMAGE UPLOAD ===
+    let questionImageData = null; // Store base64 image data
+
+    function handleQuestionImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Validate file type
+      const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        alert('Format gambar tidak didukung. Gunakan PNG, JPG, GIF, atau WebP.');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Ukuran gambar terlalu besar. Maksimal 5MB.');
+        return;
+      }
+
+      // Read and preview image
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        questionImageData = e.target.result; // Store base64
+        
+        // Show preview
+        const previewContainer = document.getElementById('question-image-preview');
+        const previewImg = document.getElementById('question-image-preview-img');
+        const previewInfo = document.getElementById('question-image-info');
+        const clearBtn = document.getElementById('btn-clear-question-image');
+
+        previewImg.src = questionImageData;
+        previewInfo.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+        previewContainer.style.display = 'block';
+        clearBtn.style.display = 'inline-flex';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearQuestionImage() {
+      questionImageData = null;
+      document.getElementById('question-image-preview').style.display = 'none';
+      document.getElementById('btn-clear-question-image').style.display = 'none';
+      document.getElementById('question-image-input').value = '';
+    }
+
+    // Export for use in admin.js
+    window.getQuestionImageData = function() {
+      return questionImageData;
+    };
+
+    window.setQuestionImageData = function(data) {
+      if (!data) {
+        clearQuestionImage();
+        return;
+      }
+      
+      questionImageData = data;
+      const previewContainer = document.getElementById('question-image-preview');
+      const previewImg = document.getElementById('question-image-preview-img');
+      const clearBtn = document.getElementById('btn-clear-question-image');
+
+      previewImg.src = data;
+      previewContainer.style.display = 'block';
+      clearBtn.style.display = 'inline-flex';
+    };
   </script>
 
   <script>

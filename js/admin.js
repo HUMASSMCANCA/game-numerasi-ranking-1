@@ -158,13 +158,20 @@ const AdminController = {
         if (recent.length === 0) {
           recentList.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:20px;">Belum ada game</p>';
         } else {
-          recentList.innerHTML = recent.map(s => `
-            <div class="monitor-player">
-              <span class="badge badge-${s.status === 'finished' ? 'success' : s.status === 'playing' ? 'primary' : 'info'}">${s.status}</span>
-              <span style="flex:1;font-weight:500;">${escapeHtml(s.title)}</span>
-              <span style="color:var(--text-muted);font-size:0.85rem;">${s.game_code}</span>
-            </div>
-          `).join('');
+          recentList.innerHTML = recent.map(s => {
+            const isActive = s.status === 'waiting' || s.status === 'playing';
+            const statusColor = s.status === 'finished' ? 'success' : s.status === 'playing' ? 'primary' : 'info';
+            const stopButton = isActive ? `<button class="btn btn-danger btn-sm" onclick="AdminController.stopGameFromDashboard('${s.id}')" style="padding:4px 12px;font-size:0.8rem;">⏹️ Hentikan</button>` : '';
+            
+            return `
+              <div class="monitor-player" style="align-items:center;">
+                <span class="badge badge-${statusColor}">${s.status}</span>
+                <span style="flex:1;font-weight:500;">${escapeHtml(s.title)}</span>
+                <span style="color:var(--text-muted);font-size:0.85rem;margin-right:12px;">${s.game_code}</span>
+                ${stopButton}
+              </div>
+            `;
+          }).join('');
         }
       }
     } catch (err) {
@@ -758,6 +765,31 @@ const AdminController = {
       if (select.value) this.loadEssayAnswers(select.value);
     } catch (err) {
       showToast('Error: ' + err.message, 'error');
+    }
+  },
+
+  // ========================
+  // STOP GAME FROM DASHBOARD
+  // ========================
+  async stopGameFromDashboard(sessionId) {
+    if (!confirm('⚠️ Yakin ingin menghentikan game ini?\n\nGame akan diakhiri dan menampilkan podium untuk semua pemain.')) {
+      return;
+    }
+
+    try {
+      // Update session status to finished
+      await SupabaseDB.updateSession(sessionId, {
+        status: 'finished',
+        finished_at: new Date().toISOString()
+      });
+
+      showToast('✅ Game berhasil dihentikan!', 'success');
+
+      // Reload dashboard to update the list
+      this.loadDashboardStats();
+    } catch (err) {
+      console.error('Stop game error:', err);
+      showToast('❌ Gagal menghentikan game: ' + err.message, 'error');
     }
   }
 };

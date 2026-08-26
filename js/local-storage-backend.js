@@ -136,6 +136,14 @@ const SupabaseDB = {
     return data;
   },
 
+  async updateSessionStatus(id, status) {
+    const updateData = { status };
+    if (status === 'finished') {
+      updateData.finished_at = new Date().toISOString();
+    }
+    return this.updateSession(id, updateData);
+  },
+
   // ========================
   // PLAYERS
   // ========================

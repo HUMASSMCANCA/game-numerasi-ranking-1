@@ -99,34 +99,55 @@
       font-size: 3rem;
       margin-bottom: 20px;
     }
+
+    .status {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      background: rgba(0,0,0,0.8);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      z-index: 1000;
+    }
+
+    .status.success {
+      background: rgba(0, 212, 170, 0.9);
+    }
+
+    .status.error {
+      background: rgba(255, 107, 107, 0.9);
+    }
   </style>
 </head>
 <body>
+  <div id="status" class="status">🎵 Klik tombol untuk mulai</div>
+  
   <div class="emoji">🏆</div>
   <h1>Test Victory Sound Effects</h1>
   
   <div class="controls">
-    <button class="btn-main" onclick="VictorySoundFX.playVictorySequence()">
+    <button class="btn-main" onclick="testFullSequence()">
       🎉 PLAY FULL VICTORY SEQUENCE
     </button>
 
-    <button class="btn-sequence" onclick="playAll()">
+    <button class="btn-sequence" onclick="testPlayAll()">
       🎵 Play All Sounds (Sequential)
     </button>
 
-    <button class="btn-drum" onclick="VictorySoundFX.playDrumRoll()">
+    <button class="btn-drum" onclick="testDrumRoll()">
       🥁 Drum Roll (1.5s)
     </button>
 
-    <button class="btn-fanfare" onclick="VictorySoundFX.playVictoryFanfare()">
+    <button class="btn-fanfare" onclick="testFanfare()">
       🎺 Victory Fanfare (2.2s)
     </button>
 
-    <button class="btn-applause" onclick="VictorySoundFX.playApplause()">
+    <button class="btn-applause" onclick="testApplause()">
       👏 Applause (2.5s)
     </button>
 
-    <button class="btn-sparkle" onclick="playSparkles()">
+    <button class="btn-sparkle" onclick="testSparkles()">
       ✨ Sparkle Magic (3x)
     </button>
   </div>
@@ -303,6 +324,91 @@
     };
 
     // Helper functions for testing
+    function showStatus(message, type = 'info') {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = 'status ' + type;
+      
+      if (type === 'success') {
+        setTimeout(() => {
+          status.textContent = '🎵 Siap untuk test lagi';
+          status.className = 'status';
+        }, 2000);
+      }
+    }
+
+    function testFullSequence() {
+      try {
+        VictorySoundFX.init();
+        VictorySoundFX.playVictorySequence();
+        showStatus('🎉 Playing full sequence...', 'success');
+        console.log('Full sequence started');
+      } catch (error) {
+        showStatus('❌ Error: ' + error.message, 'error');
+        console.error('Full sequence error:', error);
+      }
+    }
+
+    function testDrumRoll() {
+      try {
+        VictorySoundFX.init();
+        VictorySoundFX.playDrumRoll();
+        showStatus('🥁 Playing drum roll...', 'success');
+        console.log('Drum roll started');
+      } catch (error) {
+        showStatus('❌ Error: ' + error.message, 'error');
+        console.error('Drum roll error:', error);
+      }
+    }
+
+    function testFanfare() {
+      try {
+        VictorySoundFX.init();
+        VictorySoundFX.playVictoryFanfare();
+        showStatus('🎺 Playing fanfare...', 'success');
+        console.log('Fanfare started');
+      } catch (error) {
+        showStatus('❌ Error: ' + error.message, 'error');
+        console.error('Fanfare error:', error);
+      }
+    }
+
+    function testApplause() {
+      try {
+        VictorySoundFX.init();
+        VictorySoundFX.playApplause();
+        showStatus('👏 Playing applause...', 'success');
+        console.log('Applause started');
+      } catch (error) {
+        showStatus('❌ Error: ' + error.message, 'error');
+        console.error('Applause error:', error);
+      }
+    }
+
+    function testSparkles() {
+      try {
+        VictorySoundFX.init();
+        playSparkles();
+        showStatus('✨ Playing sparkles...', 'success');
+        console.log('Sparkles started');
+      } catch (error) {
+        showStatus('❌ Error: ' + error.message, 'error');
+        console.error('Sparkles error:', error);
+      }
+    }
+
+    function testPlayAll() {
+      try {
+        VictorySoundFX.init();
+        playAll();
+        showStatus('🎵 Playing all sounds...', 'success');
+        console.log('Play all started');
+      } catch (error) {
+        showStatus('❌ Error: ' + error.message, 'error');
+        console.error('Play all error:', error);
+      }
+    }
+
     function playSparkles() {
       VictorySoundFX.playSparkle(0);
       setTimeout(() => VictorySoundFX.playSparkle(0), 200);
@@ -316,10 +422,17 @@
       setTimeout(() => playSparkles(), 7000);
     }
 
-    // Auto-init on first interaction
-    document.addEventListener('click', () => {
-      VictorySoundFX.init();
-    }, { once: true });
+    // Auto-init and test on page load
+    window.addEventListener('load', () => {
+      try {
+        VictorySoundFX.init();
+        showStatus('✅ Audio system ready!', 'success');
+        console.log('Audio context initialized:', VictorySoundFX.audioContext);
+      } catch (error) {
+        showStatus('⚠️ Click any button to start', 'error');
+        console.error('Init error:', error);
+      }
+    });
   </script>
 </body>
 </html>

@@ -516,6 +516,125 @@
   <script src="js/supabase-config.js"></script>
 
   <script>
+    // === SOUND EFFECTS ENGINE ===
+    var SoundFX = {
+      audioContext: null,
+
+      init() {
+        if (!this.audioContext) {
+          this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      },
+
+      // Tension sound - dramatic question reveal
+      playQuestionReveal() {
+        this.init();
+        var ctx = this.audioContext;
+        var now = ctx.currentTime;
+
+        // Low dramatic rumble
+        var osc1 = ctx.createOscillator();
+        var gain1 = ctx.createGain();
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.frequency.setValueAtTime(80, now);
+        osc1.frequency.exponentialRampToValueAtTime(120, now + 0.3);
+        gain1.gain.setValueAtTime(0.3, now);
+        gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+        osc1.start(now);
+        osc1.stop(now + 0.8);
+
+        // Rising tension tone
+        var osc2 = ctx.createOscillator();
+        var gain2 = ctx.createGain();
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(200, now + 0.1);
+        osc2.frequency.exponentialRampToValueAtTime(600, now + 0.6);
+        gain2.gain.setValueAtTime(0, now + 0.1);
+        gain2.gain.linearRampToValueAtTime(0.15, now + 0.3);
+        gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
+        osc2.start(now + 0.1);
+        osc2.stop(now + 0.7);
+
+        // High suspense ping
+        var osc3 = ctx.createOscillator();
+        var gain3 = ctx.createGain();
+        osc3.connect(gain3);
+        gain3.connect(ctx.destination);
+        osc3.type = 'sine';
+        osc3.frequency.setValueAtTime(1200, now + 0.4);
+        osc3.frequency.exponentialRampToValueAtTime(800, now + 1.0);
+        gain3.gain.setValueAtTime(0.2, now + 0.4);
+        gain3.gain.exponentialRampToValueAtTime(0.01, now + 1.0);
+        osc3.start(now + 0.4);
+        osc3.stop(now + 1.0);
+      },
+
+      // Countdown tick sound (for last 5 seconds)
+      playTick() {
+        this.init();
+        var ctx = this.audioContext;
+        var now = ctx.currentTime;
+
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, now);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        
+        osc.start(now);
+        osc.stop(now + 0.1);
+      },
+
+      // Final countdown urgent tick
+      playUrgentTick() {
+        this.init();
+        var ctx = this.audioContext;
+        var now = ctx.currentTime;
+
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(1200, now);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        
+        osc.start(now);
+        osc.stop(now + 0.15);
+      },
+
+      // Time's up alarm
+      playTimesUp() {
+        this.init();
+        var ctx = this.audioContext;
+        var now = ctx.currentTime;
+
+        // Alarm beep pattern
+        for (var i = 0; i < 3; i++) {
+          var osc = ctx.createOscillator();
+          var gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          
+          osc.frequency.setValueAtTime(1000, now + i * 0.2);
+          gain.gain.setValueAtTime(0.25, now + i * 0.2);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.2 + 0.15);
+          
+          osc.start(now + i * 0.2);
+          osc.stop(now + i * 0.2 + 0.15);
+        }
+      }
+    };
+
     var ProjectorView = {
       sessionId: null,
       gameCode: null,
@@ -692,6 +811,9 @@
         var q = this.questions[this.currentQuestionIndex];
         if (!q) return;
 
+        // 🔊 PLAY TENSION SOUND EFFECT
+        SoundFX.playQuestionReveal();
+
         document.getElementById('proj-waiting').style.display = 'none';
         document.getElementById('proj-question-card').style.display = 'block';
 
@@ -744,8 +866,15 @@
           ProjectorView.timeRemaining--;
           timerEl.textContent = Math.max(0, ProjectorView.timeRemaining);
 
-          if (ProjectorView.timeRemaining <= 5) {
+          // 🔊 SOUND EFFECTS FOR COUNTDOWN
+          if (ProjectorView.timeRemaining <= 10 && ProjectorView.timeRemaining > 3) {
+            SoundFX.playTick(); // Regular tick for 10-4 seconds
             timerEl.classList.add('warning');
+          } else if (ProjectorView.timeRemaining <= 3 && ProjectorView.timeRemaining > 0) {
+            SoundFX.playUrgentTick(); // Urgent tick for last 3 seconds
+            timerEl.classList.add('warning');
+          } else if (ProjectorView.timeRemaining === 0) {
+            SoundFX.playTimesUp(); // Times up alarm
           }
 
           if (ProjectorView.timeRemaining <= 0) {

@@ -698,8 +698,8 @@
         📺 <span id="proj-game-title">Game Numerasi</span>
       </div>
       
-      <!-- Navigation Menu (Center) -->
-      <div class="proj-nav-menu">
+      <!-- Navigation Menu (Center) - Hidden on join screen -->
+      <div class="proj-nav-menu" id="proj-nav-menu" style="display:none;">
         <button class="proj-nav-btn teal" onclick="ProjectorView.startGame()" title="Mulai game (hanya dari admin panel)">
           ▶️ Mulai
         </button>
@@ -1028,6 +1028,11 @@
           // Show projector view
           document.getElementById('join-screen').style.display = 'none';
           document.getElementById('projector-view').classList.add('active');
+          
+          // Show navigation menu
+          var navMenu = document.getElementById('proj-nav-menu');
+          if (navMenu) navMenu.style.display = 'flex';
+          
           document.getElementById('proj-game-pin').textContent = session.game_code;
           document.getElementById('proj-game-title').textContent = session.title;
 

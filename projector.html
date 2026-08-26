@@ -846,11 +846,53 @@
         }
       },
 
-      // Tension sound - dramatic question reveal (EXTENDED VERSION - 3.5 seconds)
+      // Tension sound - dramatic question reveal
+      // Dual mode: Try loading external audio first, fallback to Web Audio API
       playQuestionReveal() {
+        console.log('🔊 Playing question reveal sound...');
+        
+        // Try external audio file first
+        var audio = new Audio();
+        audio.volume = 0.5;
+        
+        audio.addEventListener('canplaythrough', function() {
+          console.log('✅ External audio loaded, playing...');
+          audio.play().catch(function(err) {
+            console.warn('⚠️ External audio play failed:', err);
+            SoundFX.playQuestionRevealFallback();
+          });
+        }, { once: true });
+        
+        audio.addEventListener('error', function(e) {
+          console.warn('⚠️ External audio load failed, using Web Audio fallback');
+          SoundFX.playQuestionRevealFallback();
+        }, { once: true });
+        
+        // Set timeout fallback (2 seconds)
+        setTimeout(function() {
+          if (audio.readyState < 3) {
+            console.warn('⚠️ External audio timeout, using Web Audio fallback');
+            SoundFX.playQuestionRevealFallback();
+          }
+        }, 2000);
+        
+        audio.src = 'assets/sounds/projector-reveal.mp3';
+        audio.load();
+      },
+
+      // Web Audio API fallback (original 6-layer orchestration)
+      playQuestionRevealFallback() {
+        console.log('🎵 Using Web Audio API fallback');
         this.init();
         var ctx = this.audioContext;
         var now = ctx.currentTime;
+
+        // Resume context if suspended (browser autoplay policy)
+        if (ctx.state === 'suspended') {
+          ctx.resume().then(function() {
+            console.log('✅ AudioContext resumed');
+          });
+        }
 
         // LAYER 1: Deep rumbling bass (suspense foundation)
         var osc1 = ctx.createOscillator();
@@ -858,7 +900,7 @@
         osc1.connect(gain1);
         gain1.connect(ctx.destination);
         osc1.type = 'sawtooth';
-        osc1.frequency.setValueAtTime(55, now); // Deep A note
+        osc1.frequency.setValueAtTime(55, now);
         osc1.frequency.exponentialRampToValueAtTime(65, now + 1.5);
         osc1.frequency.exponentialRampToValueAtTime(110, now + 3.0);
         gain1.gain.setValueAtTime(0, now);
@@ -868,7 +910,7 @@
         osc1.start(now);
         osc1.stop(now + 3.5);
 
-        // LAYER 2: Rising tension sweep (dramatic build-up)
+        // LAYER 2: Rising tension sweep
         var osc2 = ctx.createOscillator();
         var gain2 = ctx.createGain();
         osc2.connect(gain2);
@@ -884,7 +926,7 @@
         osc2.start(now + 0.3);
         osc2.stop(now + 3.3);
 
-        // LAYER 3: Pulsating mid-frequency (heartbeat effect)
+        // LAYER 3: Pulsating mid-frequency
         for (var i = 0; i < 6; i++) {
           var osc3 = ctx.createOscillator();
           var gain3 = ctx.createGain();
@@ -898,7 +940,7 @@
           osc3.stop(now + 0.7 + (i * 0.45));
         }
 
-        // LAYER 4: High tension riser (climax build)
+        // LAYER 4: High tension riser
         var osc4 = ctx.createOscillator();
         var gain4 = ctx.createGain();
         osc4.connect(gain4);
@@ -912,7 +954,7 @@
         osc4.start(now + 1.5);
         osc4.stop(now + 3.2);
 
-        // LAYER 5: Metallic shimmer (eerie atmosphere)
+        // LAYER 5: Metallic shimmer
         var osc5 = ctx.createOscillator();
         var gain5 = ctx.createGain();
         osc5.connect(gain5);
@@ -927,7 +969,7 @@
         osc5.start(now + 2.0);
         osc5.stop(now + 3.3);
 
-        // LAYER 6: Final impact hit (dramatic conclusion)
+        // LAYER 6: Final impact hit
         var osc6 = ctx.createOscillator();
         var gain6 = ctx.createGain();
         osc6.connect(gain6);

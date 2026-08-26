@@ -1,6 +1,6 @@
 # Sound Assets
 
-## Background Music untuk Battle Section
+## 1. Background Music untuk Battle Section
 
 ### Download dari Pixabay:
 1. Kunjungi: https://pixabay.com/sound-effects/search/funky%20jazzy%20loop/
@@ -21,8 +21,33 @@ Jika tidak menemukan sound yang tepat, berikut beberapa keyword pencarian:
 - Duration: 30-60 detik (akan di-loop)
 - Volume: Jangan terlalu keras, akan di-set ke 30% volume
 
-### Lisensi:
+---
+
+## 2. Sound Proyektor - Question Reveal
+
+### Download dari Pixabay:
+1. Kunjungi: https://pixabay.com/sound-effects/search/tension%20dramatic/
+2. Cari sound effect yang menegangkan/dramatic (misalnya: "cinematic tension", "suspense", "dramatic reveal")
+3. Download file MP3
+4. Rename menjadi: `projector-reveal.mp3`
+5. Letakkan di folder ini (`assets/sounds/projector-reveal.mp3`)
+
+### Rekomendasi Sound:
+- "Cinematic Tension"
+- "Dramatic Build Up"
+- "Suspense Riser"
+- "Game Show Reveal"
+
+### Format:
+- Format: MP3 atau OGG
+- Duration: 2-5 detik
+- Volume: Akan di-set ke 50% volume
+
+---
+
+## Lisensi:
 Pastikan sound effect yang didownload dari Pixabay memiliki lisensi yang sesuai (biasanya free untuk commercial use).
 
 ## Fallback:
-Jika file tidak tersedia, aplikasi akan menggunakan Web Audio API generated music sebagai fallback.
+Jika file tidak tersedia, aplikasi akan menggunakan Web Audio API generated sounds sebagai fallback.
+

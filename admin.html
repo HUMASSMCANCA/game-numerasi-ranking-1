@@ -384,7 +384,18 @@
                 </button>
               </div>
             </div>
-            <textarea id="q-text" class="textarea" placeholder="Contoh: Berapa hasil dari 25 × 16?" rows="3"></textarea>
+            <textarea id="q-text" class="textarea" placeholder="Contoh: Berapa hasil dari 25 × 16? atau $x^2 + 5x + 6 = 0$" rows="3" oninput="debouncePreview()"></textarea>
+            
+            <!-- Equation Preview -->
+            <div style="margin-top:12px;padding:16px;background:var(--bg-surface);border-radius:var(--radius-md);border:1px solid rgba(108,99,255,0.2);">
+              <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                <span>📐 Preview (dengan equation)</span>
+                <span style="font-size:0.75rem;opacity:0.8;">Gunakan $ untuk inline atau $$ untuk display</span>
+              </div>
+              <div id="equation-preview" style="font-size:1.1rem;line-height:1.6;color:var(--text-primary);min-height:30px;">
+                <span style="color:var(--text-muted);font-style:italic;">Preview akan muncul di sini...</span>
+              </div>
+            </div>
             
             <!-- OCR Image Preview -->
             <div class="ocr-preview" id="ocr-preview" style="display:none;">
@@ -513,6 +524,21 @@
   <!-- Tesseract.js OCR -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
+  <!-- MathJax for LaTeX equation rendering -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
@@ -532,6 +558,36 @@
       const loader = document.getElementById('page-loader');
       if (loader) { loader.classList.add('hidden'); setTimeout(() => loader.remove(), 500); }
     });
+
+    // === EQUATION PREVIEW ===
+    function previewEquation() {
+      const textarea = document.getElementById('q-text');
+      const preview = document.getElementById('equation-preview');
+      
+      if (!textarea || !preview) return;
+      
+      const text = textarea.value.trim();
+      
+      if (!text) {
+        preview.innerHTML = '<span style="color:var(--text-muted);font-style:italic;">Preview akan muncul di sini...</span>';
+        return;
+      }
+      
+      // Update preview
+      preview.innerHTML = text;
+      
+      // Typeset with MathJax if available
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise([preview]).catch((err) => console.log('MathJax error:', err));
+      }
+    }
+
+    // Debounce function untuk performa
+    let previewTimeout;
+    function debouncePreview() {
+      clearTimeout(previewTimeout);
+      previewTimeout = setTimeout(previewEquation, 300);
+    }
   </script>
 
   <script>

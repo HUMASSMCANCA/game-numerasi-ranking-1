@@ -156,6 +156,16 @@
       box-shadow: 0 4px 16px rgba(0,0,0,0.3);
     }
 
+    .proj-nav-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .proj-nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     .proj-nav-btn.teal {
       background: linear-gradient(135deg, #00D4AA, #00B894);
     }
@@ -690,24 +700,24 @@
       
       <!-- Navigation Menu (Center) -->
       <div class="proj-nav-menu">
-        <button class="proj-nav-btn teal" onclick="window.location.href='index.html'">
+        <button class="proj-nav-btn teal" onclick="ProjectorView.startGame()" title="Mulai game (hanya dari admin panel)">
           ▶️ Mulai
         </button>
-        <button class="proj-nav-btn purple" onclick="window.location.href='admin.html#game'">
+        <button class="proj-nav-btn purple" onclick="ProjectorView.goToAdmin('next')" title="Buka admin untuk lanjut soal">
           🎮 Soal Berikutnya
         </button>
-        <button class="proj-nav-btn blue" onclick="window.location.href='admin.html#game'">
+        <button class="proj-nav-btn blue" onclick="ProjectorView.goToAdmin('pause')" title="Buka admin untuk pause">
           ⏸️ Jeda
         </button>
-        <button class="proj-nav-btn coral" onclick="window.location.href='admin.html#game'">
+        <button class="proj-nav-btn coral" onclick="ProjectorView.goToAdmin('end')" title="Buka admin untuk akhiri game">
           ⏹️ Akhiri
         </button>
-        <button class="proj-nav-btn gold" onclick="window.location.href='podium.html?pin=' + ProjectorView.gameCode">
+        <button class="proj-nav-btn gold" onclick="ProjectorView.goToPodium()" title="Tampilkan podium pemenang">
           🏆 Podium
         </button>
-        <a href="projector.html" class="proj-nav-btn cyan">
-          📺 Proyektor
-        </a>
+        <button class="proj-nav-btn cyan" onclick="location.reload()" title="Refresh proyektor">
+          🔄 Refresh
+        </button>
       </div>
 
       <div class="proj-meta">
@@ -1280,6 +1290,29 @@
         } else {
           document.exitFullscreen();
         }
+      },
+
+      // Navigation menu functions
+      startGame() {
+        alert('⚠️ Untuk memulai game, buka Admin Panel.\n\nProyektor hanya untuk menampilkan, tidak bisa kontrol game.');
+        this.goToAdmin('start');
+      },
+
+      goToAdmin(action) {
+        var url = 'admin.html#game';
+        if (this.gameCode) {
+          url += '?code=' + this.gameCode + '&action=' + action;
+        }
+        window.open(url, '_blank');
+      },
+
+      goToPodium() {
+        if (!this.gameCode) {
+          alert('⚠️ Belum terhubung ke game session!');
+          return;
+        }
+        var url = 'podium.html?pin=' + this.gameCode;
+        window.open(url, '_blank');
       },
 
       // Escape HTML

@@ -286,15 +286,33 @@
   <script>
     // Initialize PlayController when DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
-      console.log('DOM loaded, initializing PlayController...');
+      console.log('DOM loaded, initializing...');
+      console.log('Supabase library loaded:', typeof window.supabase !== 'undefined');
       console.log('PlayController exists:', typeof PlayController !== 'undefined');
       console.log('joinGame method exists:', typeof PlayController?.joinGame === 'function');
       
+      // Initialize Supabase first
+      if (typeof initSupabase === 'function') {
+        const supabaseReady = initSupabase();
+        console.log('Supabase initialized:', supabaseReady);
+        console.log('supabaseClient:', supabaseClient !== null);
+        
+        if (!supabaseReady) {
+          showConfigWarning();
+        }
+      }
+      
+      // Then initialize PlayController
       if (typeof PlayController !== 'undefined') {
         PlayController.init();
         console.log('PlayController initialized successfully');
       } else {
         console.error('PlayController not found!');
+      }
+      
+      // Add particles
+      if (typeof createParticles === 'function') {
+        createParticles(document.body, 20);
       }
     });
   </script>

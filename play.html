@@ -10,6 +10,47 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/play.css">
+  <style>
+    /* Exit Game Button */
+    .btn-exit-game {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #FF6B6B, #FF4757);
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+      z-index: 100;
+    }
+
+    .btn-exit-game:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+    }
+
+    .btn-exit-game:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .btn-exit-game {
+        top: 10px;
+        right: 10px;
+        padding: 8px 14px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="play-page">
@@ -107,6 +148,10 @@
               </svg>
               <div class="timer-text" id="timer-text">30</div>
             </div>
+            <!-- Exit Button -->
+            <button class="btn-exit-game" onclick="PlayController.exitGame()" title="Keluar dari game">
+              🚪 Keluar
+            </button>
           </div>
 
           <!-- Waiting State -->

@@ -590,3 +590,30 @@ document.addEventListener('DOMContentLoaded', () => {
     showConfigWarning();
   }
 });
+
+  // --- Exit Game ---
+  exitGame() {
+    if (!confirm('Yakin ingin keluar dari game?\n\nSkor kamu akan tetap tersimpan.')) {
+      return;
+    }
+
+    // Stop timer
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+
+    // Clear session storage
+    sessionStorage.removeItem('gameSession');
+    sessionStorage.removeItem('playerName');
+    sessionStorage.removeItem('playerColor');
+
+    // Show toast
+    showToast('👋 Keluar dari game. Terima kasih sudah bermain!', 'info');
+
+    // Redirect to home after short delay
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 1000);
+  },
+};

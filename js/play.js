@@ -200,6 +200,12 @@ const PlayController = {
   onGameStart() {
     playSound('victory');
     this.showSection('battle');
+    
+    // Start background music
+    if (typeof BackgroundMusic !== 'undefined') {
+      BackgroundMusic.play();
+    }
+    
     const q = GameEngine.getCurrentQuestion();
     if (q) {
       this.showQuestion(q, 0);
@@ -557,6 +563,16 @@ const PlayController = {
     if (newStatus === 'paused') {
       this.stopTimer();
       this.showFeedback('⏸️', 'Game dijeda oleh admin');
+      
+      // Pause background music
+      if (typeof BackgroundMusic !== 'undefined') {
+        BackgroundMusic.pause();
+      }
+    } else if (newStatus === 'playing' && oldStatus === 'paused') {
+      // Resume background music
+      if (typeof BackgroundMusic !== 'undefined') {
+        BackgroundMusic.resume();
+      }
     }
   },
 
@@ -564,6 +580,11 @@ const PlayController = {
   onGameEnd() {
     this.stopTimer();
     playSound('victory');
+
+    // Stop background music
+    if (typeof BackgroundMusic !== 'undefined') {
+      BackgroundMusic.stop();
+    }
 
     // Store session info and redirect to podium
     saveLocal('lastSession', {

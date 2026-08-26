@@ -113,6 +113,8 @@
       padding: 16px 40px;
       background: rgba(255,255,255,0.02);
       border-bottom: 1px solid rgba(255,255,255,0.05);
+      flex-wrap: wrap;
+      gap: 16px;
     }
 
     .proj-title {
@@ -121,6 +123,62 @@
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+
+    /* Navigation Menu - Center */
+    .proj-nav-menu {
+      display: flex;
+      gap: 12px;
+      flex: 1;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .proj-nav-btn {
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .proj-nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+
+    .proj-nav-btn.teal {
+      background: linear-gradient(135deg, #00D4AA, #00B894);
+    }
+
+    .proj-nav-btn.purple {
+      background: linear-gradient(135deg, #6C63FF, #8B83FF);
+    }
+
+    .proj-nav-btn.blue {
+      background: linear-gradient(135deg, #3498DB, #2980B9);
+    }
+
+    .proj-nav-btn.coral {
+      background: linear-gradient(135deg, #FF6B6B, #FF4757);
+    }
+
+    .proj-nav-btn.gold {
+      background: linear-gradient(135deg, #FFD93D, #FFA500);
+      color: #000;
+    }
+
+    .proj-nav-btn.cyan {
+      background: linear-gradient(135deg, #00D4FF, #0099CC);
     }
 
     .proj-pin {
@@ -427,24 +485,6 @@
     @media (max-width: 768px) {
       body { overflow-y: auto; }
 
-      /* Join Screen */
-      .join-screen h1 { font-size: 2rem; }
-      .join-screen p { font-size: 1rem; }
-      .join-box {
-        flex-direction: column;
-        width: 100%;
-        padding: 0 20px;
-      }
-      .join-box input {
-        width: 100%;
-        font-size: 1.5rem;
-        letter-spacing: 4px;
-      }
-      .btn-join {
-        width: 100%;
-        font-size: 1.1rem;
-      }
-
       /* Header - Stack vertically */
       .proj-header {
         flex-direction: column;
@@ -455,6 +495,19 @@
         font-size: 1.1rem;
         text-align: center;
       }
+      
+      /* Navigation menu - wrap & smaller */
+      .proj-nav-menu {
+        width: 100%;
+        justify-content: center;
+        gap: 8px;
+      }
+      .proj-nav-btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        flex: 0 0 auto;
+      }
+      
       .proj-pin {
         font-size: 1.2rem;
         letter-spacing: 2px;
@@ -634,6 +687,29 @@
       <div class="proj-title">
         📺 <span id="proj-game-title">Game Numerasi</span>
       </div>
+      
+      <!-- Navigation Menu (Center) -->
+      <div class="proj-nav-menu">
+        <button class="proj-nav-btn teal" onclick="window.location.href='index.html'">
+          ▶️ Mulai
+        </button>
+        <button class="proj-nav-btn purple" onclick="window.location.href='admin.html#game'">
+          🎮 Soal Berikutnya
+        </button>
+        <button class="proj-nav-btn blue" onclick="window.location.href='admin.html#game'">
+          ⏸️ Jeda
+        </button>
+        <button class="proj-nav-btn coral" onclick="window.location.href='admin.html#game'">
+          ⏹️ Akhiri
+        </button>
+        <button class="proj-nav-btn gold" onclick="window.location.href='podium.html?pin=' + ProjectorView.gameCode">
+          🏆 Podium
+        </button>
+        <a href="projector.html" class="proj-nav-btn cyan">
+          📺 Proyektor
+        </a>
+      </div>
+
       <div class="proj-meta">
         <div>PIN: <span class="proj-pin" id="proj-game-pin">------</span></div>
         <div>Pemain: <span id="proj-player-count">0</span></div>

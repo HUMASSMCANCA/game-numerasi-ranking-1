@@ -42,10 +42,48 @@
       transform: translateY(0);
     }
 
+    /* End Game Button */
+    .btn-end-game {
+      position: absolute;
+      top: 20px;
+      left: 160px;
+      background: linear-gradient(135deg, #E74C3C, #C0392B);
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+      z-index: 100;
+    }
+
+    .btn-end-game:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(231, 76, 60, 0.5);
+    }
+
+    .btn-end-game:active {
+      transform: translateY(0);
+    }
+
     @media (max-width: 768px) {
       .btn-exit-game {
         top: 10px;
         left: 10px;
+        padding: 8px 14px;
+        font-size: 0.85rem;
+      }
+      
+      .btn-end-game {
+        top: 10px;
+        left: 130px;
         padding: 8px 14px;
         font-size: 0.85rem;
       }
@@ -151,6 +189,10 @@
             <!-- Exit Button -->
             <button class="btn-exit-game" onclick="PlayController.exitGame()" title="Keluar dari game">
               🚪 Keluar
+            </button>
+            <!-- End Game Button (for admin/teacher) -->
+            <button class="btn-end-game" onclick="PlayController.endGameConfirm()" title="Akhiri game untuk semua pemain">
+              ⏹️ Akhiri Game
             </button>
           </div>
 

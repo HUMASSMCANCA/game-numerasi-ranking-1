@@ -69,11 +69,13 @@ const PodiumController = {
       // Setup export buttons
       this.setupExportButtons(players, session);
 
-      // Trigger celebrations
+      // Trigger celebrations with victory sounds
       setTimeout(() => {
         createConfetti(document.body, 100);
-        playSound('victory');
-      }, 1500);
+        if (typeof VictorySoundFX !== 'undefined') {
+          VictorySoundFX.playVictorySequence();
+        }
+      }, 500);
     } catch (err) {
       console.error('Load results error:', err);
       document.querySelector('.podium-title p').textContent = 'Error memuat hasil';

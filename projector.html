@@ -661,6 +661,10 @@
         <div class="proj-question-card" id="proj-question-card" style="display:none;">
           <div class="proj-q-number" id="proj-q-number">SOAL 1 / 10</div>
           <div class="proj-q-category" id="proj-q-category">🔢 Matematika</div>
+          <!-- Question Image -->
+          <div id="proj-q-image-container" style="display:none;margin-bottom:24px;">
+            <img id="proj-q-image" style="max-width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.4);" alt="Question image" />
+          </div>
           <div class="proj-q-text" id="proj-q-text">Menunggu soal...</div>
           <div id="proj-q-type">
             <span class="proj-q-type-badge mc" id="proj-q-type-badge">📝 Pilihan Ganda</span>
@@ -708,6 +712,7 @@
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/question-renderer.js"></script>
 
   <script>
     // === SOUND EFFECTS ENGINE ===
@@ -1068,7 +1073,14 @@
           'campuran': '🔢 Campuran', 'cerita': '📖 Soal Cerita'
         };
         document.getElementById('proj-q-category').textContent = catLabels[q.category] || q.category;
-        document.getElementById('proj-q-text').textContent = q.question_text;
+        
+        // Update question image if exists
+        if (typeof QuestionRenderer !== 'undefined') {
+          QuestionRenderer.updateQuestionImage(q, 'proj-q-image');
+          QuestionRenderer.updateQuestionText(q, 'proj-q-text');
+        } else {
+          document.getElementById('proj-q-text').textContent = q.question_text;
+        }
 
         var typeBadge = document.getElementById('proj-q-type-badge');
         if (q.question_type === 'essay') {

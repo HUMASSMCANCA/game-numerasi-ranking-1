@@ -173,10 +173,26 @@
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
+  <!-- MathJax for LaTeX equation rendering -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
   <!-- Game Scripts -->
   <script src="js/supabase-config.js"></script>
   <script src="js/local-storage-backend.js"></script>
   <script src="js/utils.js"></script>
+  <script src="js/question-renderer.js"></script>
   <script src="js/game-engine.js"></script>
   <script src="js/play.js"></script>
 </body>

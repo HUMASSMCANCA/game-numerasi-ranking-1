@@ -274,7 +274,7 @@ const PlayController = {
       if (essayArea) essayArea.style.display = 'none';
       if (optionsGrid) {
         optionsGrid.style.display = 'grid';
-        var labels = ['A', 'B', 'C', 'D'];
+        var labels = ['A', 'B', 'C', 'D', 'E'];
         var options = typeof question.options === 'string' ? JSON.parse(question.options) : question.options;
 
         optionsGrid.innerHTML = options.map(function(opt, i) {

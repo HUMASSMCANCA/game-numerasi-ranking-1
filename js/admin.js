@@ -280,8 +280,8 @@ const AdminController = {
     this.toggleQuestionType(question?.question_type || 'multiple_choice');
 
     // Fill options (for multiple choice)
-    var options = question?.options || ['', '', '', ''];
-    for (var i = 0; i < 4; i++) {
+    var options = question?.options || ['', '', '', '', ''];
+    for (var i = 0; i < 5; i++) {
       var input = document.getElementById('q-option-' + i);
       if (input) input.value = options[i] || '';
     }
@@ -362,7 +362,7 @@ const AdminController = {
     } else {
       // Multiple choice
       var options = [];
-      for (var i = 0; i < 4; i++) {
+      for (var i = 0; i < 5; i++) {
         var val = document.getElementById('q-option-' + i).value.trim();
         if (val) options.push(val);
       }

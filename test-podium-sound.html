@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Victory Sound Effects</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+      text-align: center;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    button {
+      padding: 20px 40px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .btn-main {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      font-size: 1.5rem;
+      padding: 25px 50px;
+    }
+
+    .btn-sequence {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+    }
+
+    .btn-drum {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      color: #333;
+    }
+
+    .btn-fanfare {
+      background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+      color: white;
+    }
+
+    .btn-applause {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      color: #333;
+    }
+
+    .btn-sparkle {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      color: #333;
+    }
+
+    .info {
+      margin-top: 40px;
+      padding: 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      max-width: 500px;
+      text-align: center;
+    }
+
+    .emoji {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="emoji">🏆</div>
+  <h1>Test Victory Sound Effects</h1>
+  
+  <div class="controls">
+    <button class="btn-main" onclick="VictorySoundFX.playVictorySequence()">
+      🎉 PLAY FULL VICTORY SEQUENCE
+    </button>
+
+    <button class="btn-sequence" onclick="playAll()">
+      🎵 Play All Sounds (Sequential)
+    </button>
+
+    <button class="btn-drum" onclick="VictorySoundFX.playDrumRoll()">
+      🥁 Drum Roll (1.5s)
+    </button>
+
+    <button class="btn-fanfare" onclick="VictorySoundFX.playVictoryFanfare()">
+      🎺 Victory Fanfare (2.2s)
+    </button>
+
+    <button class="btn-applause" onclick="VictorySoundFX.playApplause()">
+      👏 Applause (2.5s)
+    </button>
+
+    <button class="btn-sparkle" onclick="playSparkles()">
+      ✨ Sparkle Magic (3x)
+    </button>
+  </div>
+
+  <div class="info">
+    <p><strong>Victory Sequence Timeline:</strong></p>
+    <p style="font-size: 0.9rem; line-height: 1.8; margin-top: 10px;">
+      0.0s → 🥁 Drum roll<br>
+      1.5s → 🎺 Fanfare climax<br>
+      1.6s → 👏 Applause starts<br>
+      2.3s → ✨ Sparkle 1<br>
+      2.5s → ✨ Sparkle 2<br>
+      2.7s → ✨ Sparkle 3<br>
+      4.1s → Complete!
+    </p>
+  </div>
+
+  <script>
+    // === VICTORY SOUND EFFECTS ENGINE ===
+    var VictorySoundFX = {
+      audioContext: null,
+
+      init() {
+        if (!this.audioContext) {
+          this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      },
+
+      // Victory Fanfare - Triumphant celebration sound
+      playVictoryFanfare() {
+        this.init();
+        const ctx = this.audioContext;
+        const now = ctx.currentTime;
+
+        // Trumpet-like fanfare melody
+        const notes = [
+          { freq: 523.25, start: 0, duration: 0.3 },      // C5
+          { freq: 659.25, start: 0.3, duration: 0.3 },    // E5
+          { freq: 783.99, start: 0.6, duration: 0.3 },    // G5
+          { freq: 1046.5, start: 0.9, duration: 0.5 },    // C6 (climax)
+          { freq: 783.99, start: 1.4, duration: 0.2 },    // G5
+          { freq: 1046.5, start: 1.6, duration: 0.6 }     // C6 (final)
+        ];
+
+        notes.forEach(note => {
+          // Main oscillator (trumpet-like)
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(note.freq, now + note.start);
+          
+          // Envelope
+          gain.gain.setValueAtTime(0, now + note.start);
+          gain.gain.linearRampToValueAtTime(0.3, now + note.start + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + note.start + note.duration);
+          
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          
+          osc.start(now + note.start);
+          osc.stop(now + note.start + note.duration);
+        });
+      },
+
+      // Applause and cheering simulation
+      playApplause() {
+        this.init();
+        const ctx = this.audioContext;
+        const now = ctx.currentTime;
+        const duration = 2.5;
+
+        // Create noise for applause
+        const bufferSize = ctx.sampleRate * duration;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+
+        // Generate pink noise (softer than white noise)
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * 0.15;
+        }
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 1000;
+        filter.Q.value = 0.5;
+
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.4, now + 0.3);
+        gain.gain.setValueAtTime(0.4, now + duration - 0.5);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        noise.start(now);
+        noise.stop(now + duration);
+      },
+
+      // Sparkle/Magic sound for podium appearance
+      playSparkle(delay = 0) {
+        this.init();
+        const ctx = this.audioContext;
+        const now = ctx.currentTime + delay;
+
+        // Bell-like sparkle
+        const frequencies = [1046.5, 1318.5, 1568, 2093];
+        
+        frequencies.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + i * 0.05);
+          
+          gain.gain.setValueAtTime(0, now + i * 0.05);
+          gain.gain.linearRampToValueAtTime(0.2, now + i * 0.05 + 0.01);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.05 + 0.4);
+          
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          
+          osc.start(now + i * 0.05);
+          osc.stop(now + i * 0.05 + 0.4);
+        });
+      },
+
+      // Drum roll for anticipation
+      playDrumRoll(duration = 1.5) {
+        this.init();
+        const ctx = this.audioContext;
+        const now = ctx.currentTime;
+        const beats = 32; // Number of drum hits
+        const interval = duration / beats;
+
+        for (let i = 0; i < beats; i++) {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const filter = ctx.createBiquadFilter();
+
+          osc.type = 'triangle';
+          osc.frequency.value = 80 + (i * 2); // Increasing pitch for tension
+          
+          filter.type = 'lowpass';
+          filter.frequency.value = 200;
+
+          gain.gain.setValueAtTime(0, now + i * interval);
+          gain.gain.linearRampToValueAtTime(0.3 + (i * 0.01), now + i * interval + 0.001);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + i * interval + 0.05);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc.start(now + i * interval);
+          osc.stop(now + i * interval + 0.05);
+        }
+      },
+
+      // Complete victory sequence
+      playVictorySequence() {
+        this.playDrumRoll(1.5);
+        setTimeout(() => this.playVictoryFanfare(), 1500);
+        setTimeout(() => this.playApplause(), 1600);
+        setTimeout(() => this.playSparkle(0), 2300);
+        setTimeout(() => this.playSparkle(0), 2500);
+        setTimeout(() => this.playSparkle(0), 2700);
+      }
+    };
+
+    // Helper functions for testing
+    function playSparkles() {
+      VictorySoundFX.playSparkle(0);
+      setTimeout(() => VictorySoundFX.playSparkle(0), 200);
+      setTimeout(() => VictorySoundFX.playSparkle(0), 400);
+    }
+
+    function playAll() {
+      VictorySoundFX.playDrumRoll();
+      setTimeout(() => VictorySoundFX.playVictoryFanfare(), 2000);
+      setTimeout(() => VictorySoundFX.playApplause(), 4500);
+      setTimeout(() => playSparkles(), 7000);
+    }
+
+    // Auto-init on first interaction
+    document.addEventListener('click', () => {
+      VictorySoundFX.init();
+    }, { once: true });
+  </script>
+</body>
+</html>

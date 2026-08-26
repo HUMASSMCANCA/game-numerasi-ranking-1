@@ -703,13 +703,13 @@
         <button class="proj-nav-btn teal" onclick="ProjectorView.startGame()" title="Mulai game (hanya dari admin panel)">
           ▶️ Mulai
         </button>
-        <button class="proj-nav-btn purple" onclick="ProjectorView.goToAdmin('next')" title="Buka admin untuk lanjut soal">
+        <button class="proj-nav-btn purple" onclick="ProjectorView.nextQuestion()" title="Lanjut ke soal berikutnya">
           🎮 Soal Berikutnya
         </button>
-        <button class="proj-nav-btn blue" onclick="ProjectorView.goToAdmin('pause')" title="Buka admin untuk pause">
+        <button class="proj-nav-btn blue" onclick="ProjectorView.pauseGame()" title="Jeda / Lanjutkan game">
           ⏸️ Jeda
         </button>
-        <button class="proj-nav-btn coral" onclick="ProjectorView.goToAdmin('end')" title="Buka admin untuk akhiri game">
+        <button class="proj-nav-btn coral" onclick="ProjectorView.endGame()" title="Akhiri game dan tampilkan podium">
           ⏹️ Akhiri
         </button>
         <button class="proj-nav-btn gold" onclick="ProjectorView.goToPodium()" title="Tampilkan podium pemenang">
@@ -1298,9 +1298,137 @@
       },
 
       // Navigation menu functions
-      startGame() {
-        alert('⚠️ Untuk memulai game, buka Admin Panel.\n\nProyektor hanya untuk menampilkan, tidak bisa kontrol game.');
-        this.goToAdmin('start');
+      async startGame() {
+        if (!this.sessionId) {
+          alert('⚠️ Belum terhubung ke game session!');
+          return;
+        }
+
+        if (!confirm('🎮 Mulai game sekarang?\n\nSemua pemain akan mulai menjawab soal pertama.')) {
+          return;
+        }
+
+        try {
+          // Start game via Supabase
+          await supabaseClient.from('game_sessions').update({
+            status: 'playing',
+            current_question_index: 0,
+            started_at: new Date().toISOString(),
+            question_started_at: new Date().toISOString()
+          }).eq('id', this.sessionId);
+
+          // Play sound
+          if (typeof SoundFX !== 'undefined') {
+            SoundFX.playQuestionReveal();
+          }
+
+          showToast('🎮 Game dimulai!', 'success');
+        } catch (err) {
+          console.error('Start game error:', err);
+          alert('❌ Gagal memulai game: ' + err.message);
+        }
+      },
+
+      async nextQuestion() {
+        if (!this.sessionId) {
+          alert('⚠️ Belum terhubung ke game session!');
+          return;
+        }
+
+        try {
+          // Get current session
+          const { data: session } = await supabaseClient
+            .from('game_sessions')
+            .select('current_question_index, question_ids')
+            .eq('id', this.sessionId)
+            .single();
+
+          if (!session) {
+            alert('⚠️ Session tidak ditemukan!');
+            return;
+          }
+
+          const nextIndex = session.current_question_index + 1;
+          
+          if (nextIndex >= session.question_ids.length) {
+            if (confirm('✅ Ini soal terakhir.\n\nAkhiri game dan tampilkan podium?')) {
+              await this.endGame();
+            }
+            return;
+          }
+
+          // Update to next question
+          await supabaseClient.from('game_sessions').update({
+            current_question_index: nextIndex,
+            question_started_at: new Date().toISOString()
+          }).eq('id', this.sessionId);
+
+          // Play sound
+          if (typeof SoundFX !== 'undefined') {
+            SoundFX.playQuestionReveal();
+          }
+
+          showToast('➡️ Soal berikutnya', 'info');
+        } catch (err) {
+          console.error('Next question error:', err);
+          alert('❌ Gagal lanjut soal: ' + err.message);
+        }
+      },
+
+      async pauseGame() {
+        if (!this.sessionId) {
+          alert('⚠️ Belum terhubung ke game session!');
+          return;
+        }
+
+        try {
+          // Get current status
+          const { data: session } = await supabaseClient
+            .from('game_sessions')
+            .select('status')
+            .eq('id', this.sessionId)
+            .single();
+
+          const newStatus = session.status === 'paused' ? 'playing' : 'paused';
+          const message = newStatus === 'paused' ? '⏸️ Game dijeda' : '▶️ Game dilanjutkan';
+
+          await supabaseClient.from('game_sessions').update({
+            status: newStatus
+          }).eq('id', this.sessionId);
+
+          showToast(message, 'info');
+        } catch (err) {
+          console.error('Pause game error:', err);
+          alert('❌ Gagal pause game: ' + err.message);
+        }
+      },
+
+      async endGame() {
+        if (!this.sessionId) {
+          alert('⚠️ Belum terhubung ke game session!');
+          return;
+        }
+
+        if (!confirm('⚠️ AKHIRI GAME?\n\nGame akan selesai dan menampilkan podium untuk semua pemain.\n\nLanjutkan?')) {
+          return;
+        }
+
+        try {
+          await supabaseClient.from('game_sessions').update({
+            status: 'finished',
+            finished_at: new Date().toISOString()
+          }).eq('id', this.sessionId);
+
+          showToast('🏁 Game selesai! Menampilkan podium...', 'success');
+
+          // Auto redirect to podium after 2 seconds
+          setTimeout(() => {
+            window.location.href = 'podium.html?pin=' + this.gameCode;
+          }, 2000);
+        } catch (err) {
+          console.error('End game error:', err);
+          alert('❌ Gagal mengakhiri game: ' + err.message);
+        }
       },
 
       goToAdmin(action) {
